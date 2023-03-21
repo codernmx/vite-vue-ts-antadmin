@@ -7,9 +7,9 @@ import HelloWorld from './components/HelloWorld.vue'
 </template>
 
 <style scoped>
-body{
-  height: 100vh;
-}
+/*body{*/
+/*  height: 100vh;*/
+/*}*/
 /* .logo {
   height: 6em;
   padding: 1.5em;
