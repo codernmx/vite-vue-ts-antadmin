@@ -1,17 +1,18 @@
 import { createRouter, createWebHistory } from "vue-router"
 
 // import Layout from '@/components/HelloWorld.vue'
-import Layout from '../components/HelloWorld.vue'
+import Layout from '@/Layout/index.vue'
 
 // 2. 定义路由配置
 const routes = [
     {
         path: "/",
         component: Layout,
+        redirect:'/sys',
         children: [
             {
                 path: "/sys",
-                component: () => import('../views/system/menu.vue'),
+                component: () => import('@/views/system/menu.vue'),
             }
         ]
     },

@@ -83,11 +83,11 @@ import Tag from './tag.vue'
 import { ref } from 'vue'
 
 const selectedKeys2 = ref<string[]>(['1'])
-const collapsed = ref<boolean>(true)
+let collapsed = ref<boolean>(true)
 const openKeys = ref<string[]>(['sub1'])
 const tips = () => {
   message.success('切换成功')
-  collapsed.value = !collapsed.value
+  collapsed = !collapsed
 }
 </script>
 <style scoped lang="less">
