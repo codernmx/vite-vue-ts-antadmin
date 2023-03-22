@@ -10,12 +10,12 @@
         </a-breadcrumb>
         <a-dropdown :trigger="['click']" class="login-check">
           <a class="ant-dropdown-link" @click.prevent> Maisy
-            <DownOutlined/>
+            <DownOutlined />
           </a>
           <template #overlay>
             <a-menu>
               <a-menu-item key="3">个人中心</a-menu-item>
-              <a-menu-divider/>
+              <a-menu-divider />
               <a-menu-item key="3">退出登录</a-menu-item>
             </a-menu>
           </template>
@@ -25,24 +25,20 @@
     <a-layout style="height: calc(100vh - 64px)">
       <a-layout-sider width="200" style="background: #fff;height:calc(100vh - 22px - 64px) " v-model:collapsed="collapsed" :trigger="null" collapsible>
         <div style="text-align: center">
-          <menu-unfold-outlined
-              v-if="collapsed"
-              class="trigger"
-              @click="tips"
-          />
-          <menu-fold-outlined v-else class="trigger" @click="tips"/>
+          <menu-unfold-outlined v-if="collapsed" class="trigger" @click="tips" />
+          <menu-fold-outlined v-else class="trigger" @click="tips" />
         </div>
         <a-menu v-model:selectedKeys="selectedKeys2" v-model:openKeys="openKeys" mode="inline" :style="{ height: '100%', borderRight: 0 }">
           <a-menu-item key="1">
             <template #icon>
-              <home-outlined/>
+              <home-outlined />
             </template>
             首页
           </a-menu-item>
           <a-sub-menu key="sub2">
             <template #title>
               <span>
-                <setting-outlined/>
+                <setting-outlined />
                 <span v-if="!collapsed">系统管理</span>
               </span>
             </template>
@@ -55,9 +51,14 @@
       </a-layout-sider>
       <a-layout style="padding: 10px">
         <div class="tag">
-          <Tag/>
+          <Tag />
         </div>
         <a-layout-content class="main">
+          <router-view v-slot="{ Component }">
+            <transition name="fade">
+              <component :is="Component" />
+            </transition>
+          </router-view>
         </a-layout-content>
         <a-layout-footer style="text-align: center;padding: 10px">
           ©2023 By Maisy
@@ -74,13 +75,12 @@ import {
   MenuFoldOutlined,
   DownOutlined,
   HomeOutlined,
-  SettingOutlined
+  SettingOutlined,
 } from '@ant-design/icons-vue'
-import {message} from 'ant-design-vue'
+import { message } from 'ant-design-vue'
 import Tag from './tag.vue'
 
-
-import {ref} from 'vue'
+import { ref } from 'vue'
 
 const selectedKeys2 = ref<string[]>(['1'])
 const collapsed = ref<boolean>(true)
@@ -91,7 +91,6 @@ const tips = () => {
 }
 </script>
 <style scoped lang="less">
-
 .tag {
   width: 100%;
   height: 32px;
@@ -130,5 +129,4 @@ const tips = () => {
     }
   }
 }
-
 </style>
