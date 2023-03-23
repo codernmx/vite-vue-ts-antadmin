@@ -1,25 +1,22 @@
 <script setup lang="ts">
 
+import useDemoStore from '@/store/modules/demo'
+import { storeToRefs } from 'pinia'
+
+const demoStore = useDemoStore()
+const { show } = storeToRefs(demoStore)
+
+
 </script>
 
 <template>
-   <router-view />
+  <a-spin tip="服务器拼命加载中..." :spinning="show" wrapperClassName="loadinglcl">
+    <router-view v-slot="{ Component }">
+      <transition>
+        <component :is="Component" />
+      </transition>
+    </router-view>
+  </a-spin>
 </template>
 
-<style scoped>
-/*body{*/
-/*  height: 100vh;*/
-/*}*/
-/* .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-} */
-</style>
+<style scoped></style>

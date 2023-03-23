@@ -23,3 +23,10 @@ export function menuAdd(params) {
     params
   })
 }
+export function updateApi(params) {
+  return request({
+    url: `/update/menu`,
+    method: 'GET',
+    params
+  })
+}

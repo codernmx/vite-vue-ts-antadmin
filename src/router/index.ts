@@ -5,10 +5,19 @@ import Layout from '@/Layout/index.vue'
 
 // 2. 定义路由配置
 const routes = [
+    {//未匹配的页面，默认跳转到404页面
+        path: '/:pathMatch(.*)*',
+        redirect: '/404',
+    },
+    {
+        path: '/404',
+        name: "Error",
+        component: () => import('@/views/error/404.vue'),
+    },
     {
         path: "/",
         component: Layout,
-        redirect:'/sys',
+        redirect: '/sys',
         children: [
             {
                 path: "/sys",
