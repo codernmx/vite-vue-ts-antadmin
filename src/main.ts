@@ -1,12 +1,15 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-import router from "./router/index.ts";
 import store from '@/store'
+import router from "@/router/index";
+
 
 
 
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
 
-createApp(App).use(Antd).use(router).use(store).mount('#app')
+createApp(App).use(store).use(Antd).use(router).use(ElementPlus).mount('#app')

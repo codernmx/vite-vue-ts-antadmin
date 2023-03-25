@@ -10,13 +10,13 @@ const { show } = storeToRefs(demoStore)
 </script>
 
 <template>
-  <a-spin tip="服务器拼命加载中..." :spinning="show" wrapperClassName="loadinglcl">
+  <!--<a-spin tip="服务器拼命加载中..." :spinning="show" wrapperClassName="loadinglcl">-->
     <router-view v-slot="{ Component }">
       <transition>
         <component :is="Component" />
       </transition>
     </router-view>
-  </a-spin>
+  <!--</a-spin>-->
 </template>
 
 <style scoped></style>

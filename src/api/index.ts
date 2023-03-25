@@ -1,32 +1,53 @@
 import request from '@/utils/request'
 
-
-export function getMenuList(params) {
-  return request({
-    url: ``,
-    method: 'GET',
-    params
-  })
-}
-export function menuDel(params) {
-  return request({
-    url: `/del/menu`,
-    method: 'GET',
-    params
-  })
+export interface IDelData {
+    id?: string
 }
 
-export function menuAdd(params) {
-  return request({
-    url: `/insert/menu`,
-    method: 'GET',
-    params
-  })
+export interface IAddData {
+    parId?: string
+    icon: string
+    name: string
+    path: string
+    sort?: string
 }
-export function updateApi(params) {
-  return request({
-    url: `/update/menu`,
-    method: 'GET',
-    params
-  })
+
+export interface IUpdateData {
+    id?: string
+    icon: string
+    name: string
+    path: string
+    sort?: string
+}
+
+
+export function getMenuList() {
+    return request({
+        url: `/menu/list`,
+        method: 'POST'
+    })
+}
+
+export function menuDel(data: IDelData) {
+    return request({
+        url: `/del/menu`,
+        method: 'POST',
+        data
+    })
+}
+
+export function menuAdd(data: IAddData) {
+    return request({
+        url: `/insert/menu`,
+        method: 'POST',
+        data
+    })
+}
+
+export function updateApi(data: IUpdateData) {
+    return request({
+        url: `/update/menu`,
+        method: 'POST',
+        data
+    })
 }

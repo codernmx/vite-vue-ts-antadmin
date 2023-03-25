@@ -10,8 +10,10 @@ const dbConfig = {
 	connectionLimit: 100,
 }
 
+const fileUrl = 'http://localhost:3000/'  //文件访问路径
 
 
 module.exports = {
 	dbConfig,
+	fileUrl
 }
