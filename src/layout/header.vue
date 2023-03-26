@@ -1,6 +1,9 @@
 <template>
   <a-layout-header class="header">
-    <div class="logo" :style="{width:showMenu?'80px':'200px'}">LOGO</div>
+    <!--后面改-->
+    <div class="logo" :style="{width:showMenu?'80px':'200px'}" v-if="!showMenu">
+      <el-image :src="logo" style="height: 42px;margin-left: 40px;margin-top: 15px"></el-image>
+    </div>
     <div class="head-right">
       <!--<a-breadcrumb style="margin: 16px 0;color: black">-->
       <!--  <a-breadcrumb-item>Home</a-breadcrumb-item>-->
@@ -9,12 +12,12 @@
       <!--</a-breadcrumb>-->
       <div></div>
       <a-dropdown :trigger="['hover']" class="login-check">
-        <a class="ant-dropdown-link" @click.prevent> Maisy
+        <a class="ant-dropdown-link" @click.prevent> {{ demoStore.data.userInfo.name }}
           <DownOutlined/>
         </a>
         <template #overlay>
           <a-menu @click="click">
-            <a-menu-item key="1">个人中心</a-menu-item>
+            <a-menu-item key="1">回到前台</a-menu-item>
             <a-menu-divider/>
             <a-menu-item key="2">退出登录</a-menu-item>
           </a-menu>
@@ -24,12 +27,14 @@
   </a-layout-header>
 </template>
 <script setup lang="ts">
+import logo from '@/assets/logo.png'
 import {DownOutlined} from '@ant-design/icons-vue'
 import {useRouter} from 'vue-router'
 
 import useDemoStore from '@/store/modules/demo'
 import {storeToRefs} from 'pinia'
 
+const demoStore = useDemoStore()
 const {showMenu} = storeToRefs(useDemoStore())
 
 const router = useRouter()
@@ -38,8 +43,13 @@ import {message} from 'ant-design-vue'
 
 const click = (val) => {
   if (val.key === '2') {
+    demoStore.clearToken()
     message.success('成功')
     router.push('/login')
+  }
+
+  if (val.key === '1') {
+    router.push('/front/home')
   }
 }
 </script>

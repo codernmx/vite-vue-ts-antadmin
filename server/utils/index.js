@@ -35,7 +35,7 @@ function success (res, total = null) {
 function fail (msg) {
 	return {
 		code: 500,
-		msg,
+		msg: msg.toString(),
 		timestemp: new Date().getTime()
 	}
 }

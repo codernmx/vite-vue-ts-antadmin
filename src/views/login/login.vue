@@ -5,8 +5,8 @@
       <h1>登 录</h1>
       <a-form :model="form" name="basic" autocomplete="off"
           @finish="onFinish" @finishFailed="onFinishFailed">
-        <a-form-item label="" name="username" :rules="[{ required: true, message: 'Please input your username!' }]">
-          <a-input v-model:value="form.username"/>
+        <a-form-item label="" name="name" :rules="[{ required: true, message: 'Please input your name!' }]">
+          <a-input v-model:value="form.name"/>
         </a-form-item>
         <a-form-item label="" name="password" :rules="[{ required: true, message: 'Please input your password!' }]">
           <a-input-password v-model:value="form.password"/>
@@ -26,18 +26,27 @@ import {useRouter} from 'vue-router'
 const router = useRouter()
 
 
+import useDemoStore from '@/store/modules/demo'
+
+const demoStore = useDemoStore()
+
+
 interface FormState {
-  username: string;
+  name: string;
   password: string;
 }
 
 const form = reactive<FormState>({
-  username: 'admin',
+  name: 'admin',
   password: 'admin',
 });
 const onFinish = (values: any) => {
   console.log('Success:', values);
-  router.push('/')
+  demoStore.getToken(form).then(res => {
+    if (res.data) {
+      router.push('/')
+    }
+  })
 };
 
 const onFinishFailed = (errorInfo: any) => {

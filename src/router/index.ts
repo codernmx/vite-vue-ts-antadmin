@@ -1,8 +1,9 @@
-import {createRouter, createWebHistory} from "vue-router"
+import {createRouter, createWebHistory, createWebHashHistory} from "vue-router"
 
 import useDemoStore from '@/store/modules/demo'
 import {storeToRefs} from 'pinia'
 import Layout from '@/layout/index.vue'
+import fontLayout from '@/views/front/layout.vue'
 
 // 2. 定义路由配置
 const routes = [
@@ -11,6 +12,21 @@ const routes = [
         path: '/404',
         name: "Error",
         component: () => import('@/views/error/404.vue'),
+    },
+    {
+        path: '/front',
+        name: "front",
+        component: fontLayout,
+        children: [
+            {
+                path: "/front/home",
+                component: () => import('@/views/front/home.vue'),
+            },
+            {
+                path: "/front/details",
+                component: () => import('@/views/front/details.vue'),
+            }
+        ]
     },
     {
         path: '/login',
@@ -24,15 +40,11 @@ const routes = [
         meta: {title: '首页'},
         children: [
             {
-                path: "home",
+                path: "/home",
                 component: () => import('@/views/home/home.vue'),
             }
         ]
     },
-    // {//未匹配的页面，默认跳转到404页面
-    //     path: '/:pathMatch(.*)*',
-    //     redirect: '/404',
-    // },
 ];
 
 // 3. 创建路由实例
@@ -76,44 +88,42 @@ function change(temp, isChildren = false) {
     return finalArr
 }
 
+const whiteList = ['/login', '/404','/front/home']
 //守卫
 router.beforeEach((to, from, next) => {
     //判断是否有权限返回登录界面
-    console.log(from.path, to.path)
+    console.log(from.path, to.path, router.getRoutes().length)
     const demoStore = useDemoStore()
     demoStore.setTag(to.meta.title)
     const {menuList} = storeToRefs(demoStore)
-    console.log(router, router.currentRoute)
-    if (router.getRoutes().length === 4) {
-        demoStore.getMenu().then(res => {
-            const list = change(JSON.parse(JSON.stringify(res.data)))
-            list.forEach(item => {
-                router.addRoute(item)
-            })
-            router.push(to)
-        })
-    } else {
-        next()
-    }
+    if (demoStore.data.token) {
+        if (whiteList.indexOf(to.path) !== -1) {
+            next()
+        } else {
+            if (demoStore.data.menuList.length > 0) {
+                next()
+            } else {
+                demoStore.getMenu().then(res => {
+                    const list = change(JSON.parse(JSON.stringify(res.data)))
+                    list.forEach(item => {
+                        router.addRoute(item)
+                    })
+                    router.addRoute({  //动态路由处理完成之后   添加 404 页面
+                        path: "/:pathMath(.*)", // ***此处需特别注意置于最底部***
+                        redirect: "/404"
+                    })
+                    next({...to, replace: true})
+                })
+            }
 
-    // if (to.path !== '/login' && to.path !== '/404') {
-    //     if (menuList.length > 0) {
-    //         next()
-    //     } else {
-    //         demoStore.getMenu().then(res => {
-    //             console.log(change(res.data))
-    //             router.addRoute(change(res.data))
-    //             // console.log(res.data, 't')
-    //             next()
-    //         }).catch(err => {
-    //             console.log(err, 'err')
-    //             next('/404')
-    //         })
-    //
-    //     }
-    // } else {
-    //     next()
-    // }
+        }
+    } else {
+        if (whiteList.indexOf(to.path) !== -1) {
+            next()
+        } else {
+            next(`/login?redirect=${to.path}`)
+        }
+    }
 })
 
 

@@ -1,5 +1,5 @@
 <template>
-  <a-modal okText="提交" cancelText="取消" v-model:visible="visible" :title="props.title" width="40%" wrap-class-name="full-modal" @ok="handleOk"
+  <a-modal okText="提交" cancelText="取消" v-model:visible="visible" :title="props.title" width="60%" wrap-class-name="full-modal" @ok="handleOk"
       @cancel="cancel">
     <a-form labelAlign="left" ref="formRef" :model="formState" name="basic" :label-col="{ span: 4 }"
         :wrapper-col="{ span: 20 }" autocomplete="off" @finish="onFinish" @finishFailed="onFinishFailed">

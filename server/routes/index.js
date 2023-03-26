@@ -1,10 +1,38 @@
 var express = require('express');
 var router = express.Router();
-
+var md5 = require('md5-node');
+var jwt = require('../utils/jwt')
 
 const { exeSql } = require('../utils/coon');
 const { success, fail, uuid } = require('../utils/index');
 
+
+/* 登录 */
+router.post('/login', async (req, response, next) => {
+	const { name, password } = req.body
+	try {
+		const sql = `select * from user where name = '${name}'`
+		const res = await exeSql(sql)
+		if (res[0]) {
+			const sql = `select * from user where name = '${name}' and password = '${md5(password)}'`
+			const res = await exeSql(sql)
+			if (res[0]) {
+				const token = jwt.createToken({ name });
+				response.send(success({
+					...res[0],
+					token
+				}))
+			} else {
+				response.send(fail('账号或者密码错误'))
+			}
+		} else {
+			response.send(fail('账号未注册'))
+		}
+
+	} catch (error) {
+		response.send(fail(error))
+	}
+});
 
 
 /* 获取菜单列表 */
@@ -42,9 +70,9 @@ router.post('/del/menu', async (req, response, next) => {
 router.post('/insert/menu', async (req, response, next) => {
 	const { parId, icon, name, title, sort, path } = req.body
 	try {
-		let sql = `insert insert menu (id, title, icon, path, name,sort) values ('${uuid()}','${title}','${icon}','${path}','${name}','${sort}')`
+		let sql = `insert into menu (id, title, icon, path, name,sort) values ('${uuid()}','${title}','${icon}','${path}','${name}','${sort}')`
 		if (parId) {
-			sql = `insert insert menu (id,parId, title, icon, path, name,sort) values ('${uuid()}','${parId}','${title}','${icon}','${path}','${name}','${sort}')`
+			sql = `insert into menu (id,parId, title, icon, path, name,sort) values ('${uuid()}','${parId}','${title}','${icon}','${path}','${name}','${sort}')`
 		}
 		const res = await exeSql(sql)
 		response.send(success(res))
@@ -58,13 +86,73 @@ router.post('/update/menu', async (req, response, next) => {
 	try {
 		let sql = `update menu set name = '${name}',icon = '${icon}',title = '${title}',path = '${path}',sort = '${sort}' where id = '${id}'`
 		const res = await exeSql(sql)
-		setTimeout(() => {
-			response.send(success(res))
-		}, 3000);
+		response.send(success(res))
 	} catch (error) {
 		response.send(fail(error))
 	}
 });
+
+
+
+
+/* 获取文章列表 */
+router.post('/article/list', async (req, response, next) => {
+	try {
+		const sql = 'select * from article where deleteTime is null'
+		const res = await exeSql(sql)
+		response.send(success(res))
+	} catch (error) {
+		response.send(fail(error))
+	}
+});
+
+/* 获取文章详情 */
+router.post('/article/details', async (req, response, next) => {
+	const { id } = req.body
+	try {
+		const sql = `select * from article where id = '${id}'`
+		const res = await exeSql(sql)
+		response.send(success(res[0]))
+	} catch (error) {
+		response.send(fail(error))
+	}
+});
+/* 添加文章 */
+router.post('/insert/article', async (req, response, next) => {
+	const { title, content, userId } = req.body
+	try {
+		let sql = `insert into article (id,userId, title, content) values (?,?,?,?)`
+		const res = await exeSql(sql,[uuid(),userId,title,content])
+		response.send(success(res))
+	} catch (error) {
+		response.send(fail(error))
+	}
+});
+
+/* 编辑文章 */
+router.post('/update/article', async (req, response, next) => {
+	const { id, title, content, inputValue } = req.body
+	try {
+		let sql = `update article set title = '${title}',content = '${content}',inputValue = '${inputValue}' where id = '${id}'`
+		const res = await exeSql(sql)
+		response.send(success(res))
+	} catch (error) {
+		response.send(fail(error))
+	}
+});
+
+/* 删除文章 */
+router.post('/delete/article', async (req, response, next) => {
+	const { id } = req.body
+	try {
+		let sql = `update article set deleteTime = now() where id = '${id}'`
+		const res = await exeSql(sql)
+		response.send(success(res))
+	} catch (error) {
+		response.send(fail(error))
+	}
+});
+
 
 
 
