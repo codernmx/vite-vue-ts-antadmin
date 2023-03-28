@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-input v-model:value="value" placeholder="搜索一些啥" style="width:200px" allowClear/>
+    <a-input v-model:value="data.title" placeholder="搜索一些啥" style="width:200px" allowClear/>
     <a-button type="primary" class="ml-10" @click="getList">搜 索</a-button>
     <a-button type="primary" class="ml-10" @click="openChild">
       <template #icon>
@@ -27,7 +27,7 @@
     </a-table>
     <div class="center top-10">
       <a-pagination v-model:current="current" :show-total="total => `总数 ${total}`" showSizeChanger
-          :total="data.tabelData.length" @change="onChange">
+          :total="data.total" @change="onChange">
         <template #buildOptionText="props">
           <span>{{ props.value }}条/页</span>
         </template>
@@ -64,12 +64,22 @@ const columns = [
 
 const data = reactive({
   tabelData: [],
-  form: {}
+  page: {
+    pageSize: 10,
+    pageNum: 1,
+  },
+  form: {},
+  total: 0,
+  title: '',
 })
 
-const onChange = (pageNumber: number) => {
+const onChange = (pageNumber: number, pageSize) => {
   console.log('Page: ', pageNumber)
+  data.page.pageNum = pageNumber
+  data.page.pageSize = pageSize
+  getList()
 }
+
 
 const rowClick = (record) => {
   router.push({
@@ -86,8 +96,9 @@ const openChild = () => {
 
 const getList = async () => {
   try {
-    const res = await getArticleList()
-    data.tabelData = res.data || []
+    const res = await getArticleList({...data.page, title: data.title})
+    data.tabelData = res.data.rows || []
+    data.total = res.data.count
   } catch (err) {
   }
 }

@@ -11,8 +11,7 @@ var app = express();
 
 
 app.use(logger('dev'));
-// app.use(express.json());
-app.use(express.json({limit: '200mb'}))
+app.use(express.json({ limit: '200mb' })) //修改请求参数限制
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -29,7 +28,7 @@ app.all('*', function (req, res, next) {
 
 /* 所有请求都过token校验 */
 app.use(function (req, res, next) {
-	let passUrl = ['/api/login']
+	let passUrl = ['/api/login', '/api/test/user']
 	if (!passUrl.includes(req.url) && (req.url.indexOf('upload') == -1)) {
 		let token = req.headers.token;
 		let result = jwt.verifyToken(token);
@@ -49,9 +48,13 @@ app.use(function (req, res, next) {
 app.use('/api', Index);
 app.use('/api/upload', Upload);
 
-
-
-
+// const mysql_test = require('./utils/sequelize')
+// mysql_test.authenticate()  //用来测试数据库是否连接成功
+// 	.then(() => {
+// 		console.log('数据库连接成功')
+// 	}).catch((err) => {
+// 		console.log('数据库连接失败' + err)
+// 	})
 
 
 app.use(function (req, res, next) {

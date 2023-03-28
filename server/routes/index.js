@@ -7,6 +7,15 @@ const { exeSql } = require('../utils/coon');
 const { success, fail, uuid } = require('../utils/index');
 
 
+const sequelize = require('sequelize')
+const seqCoon = require('../utils/sequelize')
+const User = require('../models/user')(seqCoon, sequelize)
+const Article = require('../models/article')(seqCoon, sequelize)
+
+// 使用模糊查询需要先引入Op
+const Op = sequelize.Op;
+
+
 /* 登录 */
 router.post('/login', async (req, response, next) => {
 	const { name, password } = req.body
@@ -35,6 +44,15 @@ router.post('/login', async (req, response, next) => {
 });
 
 
+router.get('/test/user', async (req, response, next) => {
+	try {
+		const data = await User.findAll()
+		response.send(success(data))
+	} catch (error) {
+		response.send(fail(error))
+	}
+});
+
 /* 获取菜单列表 */
 router.post('/menu/list', async (req, response, next) => {
 	try {
@@ -58,9 +76,7 @@ router.post('/del/menu', async (req, response, next) => {
 	try {
 		const sql = `delete from menu where id = '${id}'`
 		const res = await exeSql(sql)
-		setTimeout(() => {
-			response.send(success(res))
-		}, 2000);
+		response.send(success(res))
 	} catch (error) {
 		response.send(fail(error))
 	}
@@ -97,10 +113,18 @@ router.post('/update/menu', async (req, response, next) => {
 
 /* 获取文章列表 */
 router.post('/article/list', async (req, response, next) => {
+	const { title, pageSize, pageNum } = req.body
 	try {
-		const sql = 'select * from article where deleteTime is null'
-		const res = await exeSql(sql)
-		response.send(success(res))
+		let data = await Article.findAndCountAll({
+			where: {
+				title: {
+					[Op.like]: `%${title}%`
+				},
+			},
+			limit: pageSize || 10,
+			offset: ((pageNum || 1) - 1) * (pageSize || 10)
+		});
+		response.send(success(data))
 	} catch (error) {
 		response.send(fail(error))
 	}
@@ -110,9 +134,8 @@ router.post('/article/list', async (req, response, next) => {
 router.post('/article/details', async (req, response, next) => {
 	const { id } = req.body
 	try {
-		const sql = `select * from article where id = '${id}'`
-		const res = await exeSql(sql)
-		response.send(success(res[0]))
+		const data = await Article.findOne({ where: { id } });
+		response.send(success(data))
 	} catch (error) {
 		response.send(fail(error))
 	}
@@ -121,8 +144,7 @@ router.post('/article/details', async (req, response, next) => {
 router.post('/insert/article', async (req, response, next) => {
 	const { title, content, userId } = req.body
 	try {
-		let sql = `insert into article (id,userId, title, content) values (?,?,?,?)`
-		const res = await exeSql(sql,[uuid(),userId,title,content])
+		const res = await Article.create({ id: uuid(), title, content, userId })
 		response.send(success(res))
 	} catch (error) {
 		response.send(fail(error))
