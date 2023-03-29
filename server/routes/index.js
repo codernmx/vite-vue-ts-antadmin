@@ -6,7 +6,7 @@ var jwt = require('../utils/jwt')
 const { exeSql } = require('../utils/coon');
 const { success, fail, uuid } = require('../utils/index');
 
-
+const { literal } = require("sequelize");
 const sequelize = require('sequelize')
 const seqCoon = require('../utils/sequelize')
 const User = require('../models/user')(seqCoon, sequelize)
@@ -16,19 +16,28 @@ const Article = require('../models/article')(seqCoon, sequelize)
 const Op = sequelize.Op;
 
 
+// // belongsTo 谁属于一个谁 / 一本书属于一个人
+Article.belongsTo(User, {
+	foreignKey: 'userId',
+	sourceKey: 'id'
+});
+// hasOne 谁拥有一个谁 / 一个人拥有一本书
+// User.hasOne(Article, {
+//     foreignKey: 'userId',
+//     sourceKey: 'id'
+// });
+
 /* 登录 */
 router.post('/login', async (req, response, next) => {
 	const { name, password } = req.body
 	try {
-		const sql = `select * from user where name = '${name}'`
-		const res = await exeSql(sql)
-		if (res[0]) {
-			const sql = `select * from user where name = '${name}' and password = '${md5(password)}'`
-			const res = await exeSql(sql)
-			if (res[0]) {
+		const data = await User.findOne({ where: { name } });
+		if (data) {
+			const login = await User.findOne({ where: { name, password: md5(password) } });
+			if (login) {
 				const token = jwt.createToken({ name });
 				response.send(success({
-					...res[0],
+					...login.get(),
 					token
 				}))
 			} else {
@@ -43,15 +52,6 @@ router.post('/login', async (req, response, next) => {
 	}
 });
 
-
-router.get('/test/user', async (req, response, next) => {
-	try {
-		const data = await User.findAll()
-		response.send(success(data))
-	} catch (error) {
-		response.send(fail(error))
-	}
-});
 
 /* 获取菜单列表 */
 router.post('/menu/list', async (req, response, next) => {
@@ -118,11 +118,13 @@ router.post('/article/list', async (req, response, next) => {
 		let data = await Article.findAndCountAll({
 			where: {
 				title: {
-					[Op.like]: `%${title}%`
+					[Op.like]: `%${title || ''}%`
 				},
 			},
+			order: [['createTime', 'desc']],
 			limit: pageSize || 10,
-			offset: ((pageNum || 1) - 1) * (pageSize || 10)
+			offset: ((pageNum || 1) - 1) * (pageSize || 10),
+			include: [{ model: User }]
 		});
 		response.send(success(data))
 	} catch (error) {
@@ -130,11 +132,20 @@ router.post('/article/list', async (req, response, next) => {
 	}
 });
 
+
+
 /* 获取文章详情 */
 router.post('/article/details', async (req, response, next) => {
 	const { id } = req.body
 	try {
-		const data = await Article.findOne({ where: { id } });
+		await Article.update({
+			views: literal("views + 1"),
+			// readCount  : literal("read_count + 1"),  // 这里有个坑注意大小写
+		}, { where: { id } });
+		const data = await Article.findOne({
+			include: [{ model: User }],
+			where: { id }
+		});
 		response.send(success(data))
 	} catch (error) {
 		response.send(fail(error))
@@ -142,9 +153,9 @@ router.post('/article/details', async (req, response, next) => {
 });
 /* 添加文章 */
 router.post('/insert/article', async (req, response, next) => {
-	const { title, content, userId } = req.body
+	const { title, content, userId,inputValue } = req.body
 	try {
-		const res = await Article.create({ id: uuid(), title, content, userId })
+		const res = await Article.create({ id: uuid(), title, content, userId,inputValue })
 		response.send(success(res))
 	} catch (error) {
 		response.send(fail(error))
@@ -155,9 +166,10 @@ router.post('/insert/article', async (req, response, next) => {
 router.post('/update/article', async (req, response, next) => {
 	const { id, title, content, inputValue } = req.body
 	try {
-		let sql = `update article set title = '${title}',content = '${content}',inputValue = '${inputValue}' where id = '${id}'`
-		const res = await exeSql(sql)
-		response.send(success(res))
+		const data = await Article.update({title, content, inputValue }, { where: { id } });
+		// let sql = `update article set title = '${title}',content = '${content}',inputValue = '${inputValue}' where id = '${id}'`
+		// const res = await exeSql(sql)
+		response.send(success(data))
 	} catch (error) {
 		response.send(fail(error))
 	}

@@ -1,16 +1,39 @@
 .center {
-  text-align: center;
+    text-align: center;
 }
 
 .top-10 {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 .top20 {
-  margin-top: 20px;
+    margin-top: 20px;
 }
 
 
 .ml-10 {
-  margin-left: 10px;
+    margin-left: 10px;
+}
+.mr-30{
+    margin-right: 10px;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.ju-s {
+    justify-content: start;
+}
+
+.ju-c {
+    justify-content: center;
+}
+
+.ju-b {
+    justify-content: space-between;
+}
+
+.ju-a {
+    justify-content: space-around;
 }

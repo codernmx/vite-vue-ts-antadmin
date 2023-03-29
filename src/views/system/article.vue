@@ -56,7 +56,7 @@ const value = ref<string>('')
 const modelTitle = ref<string>('新增')
 const columns = [
   {title: '文章标题', dataIndex: 'title', key: 'title'},
-  {title: '浏览量', dataIndex: 'icon'},
+  {title: '浏览量', dataIndex: 'views',align: 'center'},
   {title: '收藏量', dataIndex: 'path'},
   {title: '发布时间', dataIndex: 'createTime'},
   {title: '操作', key: 'action', width: 160, align: 'center'},

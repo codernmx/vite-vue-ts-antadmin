@@ -43,8 +43,11 @@ request.interceptors.response.use(response => {
     }
 
 }, error => {
-    console.log('error', error)
-    message.error(error.message)
+    if (error.message === 'Network Error') {
+        message.error('网络错误，请稍后重试')
+    } else {
+        message.error(error.message)
+    }
     loading.close()
     return Promise.reject(error)
 })

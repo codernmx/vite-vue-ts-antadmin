@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container_layout">
     <a-row type="flex" class="box">
       <a-col :span="3" class="logo">
         <a-image
@@ -65,12 +65,13 @@
         <el-image style="width: 100%; height: 100%" src="https://bt.nmxgzs.cn/upload/2022-05-13/fe3ce5d55aed80328a65dd75aac99065.jpeg" fit="cover"></el-image>
       </div>
     </a-carousel>
-    <router-view v-slot="{ Component }">
-      <transition name="fade">
-        <component :is="Component"/>
-      </transition>
-    </router-view>
+
   </div>
+  <router-view v-slot="{ Component }">
+    <transition name="fade">
+      <component :is="Component"/>
+    </transition>
+  </router-view>
 </template>
 
 <script setup lang="ts">
@@ -90,7 +91,7 @@ const router = useRouter()
 const data = reactive({
   routers: [
     {
-      title: '首页',
+      title: '博客',
       path: '/front/home'
     }
   ],
@@ -120,8 +121,8 @@ onMounted(() => {
 
 </script>
 
-<style scoped lang="less">
-.container {
+<style lang="less" scoped>
+.container_layout {
   line-height: 60px;
   cursor: pointer;
 

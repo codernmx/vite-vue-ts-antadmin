@@ -1,6 +1,6 @@
 /* jshint indent: 2 */
-
-module.exports = function(sequelize, DataTypes) {
+const moment = require('moment')
+module.exports = function (sequelize, DataTypes) {
   return sequelize.define('article', {
     'id': {
       type: DataTypes.STRING(256),
@@ -22,7 +22,16 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-      comment: "创建时间"
+      comment: "创建时间",
+      get () {
+        return moment(this.getDataValue('createTime')).format('YYYY-MM-DD HH:mm:ss');
+      }
+    },
+    'views': {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: '0',
+      comment: "浏览量"
     },
     'updateTime': {
       type: DataTypes.DATE,

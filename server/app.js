@@ -28,7 +28,7 @@ app.all('*', function (req, res, next) {
 
 /* 所有请求都过token校验 */
 app.use(function (req, res, next) {
-	let passUrl = ['/api/login', '/api/test/user']
+	let passUrl = ['/api/login']
 	if (!passUrl.includes(req.url) && (req.url.indexOf('upload') == -1)) {
 		let token = req.headers.token;
 		let result = jwt.verifyToken(token);
@@ -48,13 +48,13 @@ app.use(function (req, res, next) {
 app.use('/api', Index);
 app.use('/api/upload', Upload);
 
-// const mysql_test = require('./utils/sequelize')
-// mysql_test.authenticate()  //用来测试数据库是否连接成功
-// 	.then(() => {
-// 		console.log('数据库连接成功')
-// 	}).catch((err) => {
-// 		console.log('数据库连接失败' + err)
-// 	})
+const mysql_test = require('./utils/sequelize')
+mysql_test.authenticate()  //用来测试数据库是否连接成功
+	.then(() => {
+		console.log('数据库连接成功')
+	}).catch((err) => {
+		console.log('数据库连接失败' + err)
+	})
 
 
 app.use(function (req, res, next) {
