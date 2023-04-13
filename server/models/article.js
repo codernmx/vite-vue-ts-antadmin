@@ -1,5 +1,4 @@
 /* jshint indent: 2 */
-const moment = require('moment')
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define('article', {
     'id': {
@@ -22,10 +21,7 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-      comment: "创建时间",
-      get () {
-        return moment(this.getDataValue('createTime')).format('YYYY-MM-DD HH:mm:ss');
-      }
+      comment: "创建时间"
     },
     'views': {
       type: DataTypes.INTEGER,

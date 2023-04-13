@@ -3,29 +3,15 @@ var router = express.Router();
 var md5 = require('md5-node');
 var jwt = require('../utils/jwt')
 
-const { exeSql } = require('../utils/coon');
 const { success, fail, uuid } = require('../utils/index');
-
-const { literal } = require("sequelize");
-const sequelize = require('sequelize')
-const seqCoon = require('../utils/sequelize')
-const User = require('../models/user')(seqCoon, sequelize)
-const Article = require('../models/article')(seqCoon, sequelize)
-
-// 使用模糊查询需要先引入Op
-const Op = sequelize.Op;
+const { literal, Op, Sequelize } = require("sequelize");
+const { User, Article, Menu } = require('../models/index')
 
 
 // // belongsTo 谁属于一个谁 / 一本书属于一个人
-Article.belongsTo(User, {
-	foreignKey: 'userId',
-	sourceKey: 'id'
-});
+Article.belongsTo(User, { foreignKey: 'userId', sourceKey: 'id' });
 // hasOne 谁拥有一个谁 / 一个人拥有一本书
-// User.hasOne(Article, {
-//     foreignKey: 'userId',
-//     sourceKey: 'id'
-// });
+// User.hasOne(Article, {foreignKey: 'userId',sourceKey: 'id'});
 
 /* 登录 */
 router.post('/login', async (req, response, next) => {
@@ -56,10 +42,13 @@ router.post('/login', async (req, response, next) => {
 /* 获取菜单列表 */
 router.post('/menu/list', async (req, response, next) => {
 	try {
-		const sql = 'select * from menu where parId is null'
-		const res = await exeSql(sql)
-		const allUserSql = 'select * from menu'
-		const allUser = await exeSql(allUserSql)
+		let res = await Menu.findAll({
+			where: {
+				parId: null
+			},
+			raw: true
+		});
+		let allUser = await Menu.findAll({ raw: true });
 		res.forEach(item => {
 			item.children = allUser.filter(v => v.parId == item.id)
 		});
@@ -74,9 +63,8 @@ router.post('/menu/list', async (req, response, next) => {
 router.post('/del/menu', async (req, response, next) => {
 	const { id } = req.body
 	try {
-		const sql = `delete from menu where id = '${id}'`
-		const res = await exeSql(sql)
-		response.send(success(res))
+		const data = await Menu.destroy({ where: { id } });
+		response.send(success(data))
 	} catch (error) {
 		response.send(fail(error))
 	}
@@ -86,12 +74,12 @@ router.post('/del/menu', async (req, response, next) => {
 router.post('/insert/menu', async (req, response, next) => {
 	const { parId, icon, name, title, sort, path } = req.body
 	try {
-		let sql = `insert into menu (id, title, icon, path, name,sort) values ('${uuid()}','${title}','${icon}','${path}','${name}','${sort}')`
 		if (parId) {
-			sql = `insert into menu (id,parId, title, icon, path, name,sort) values ('${uuid()}','${parId}','${title}','${icon}','${path}','${name}','${sort}')`
+			await Menu.create({ id: uuid(), parId, icon, name, title, sort, path })
+		} else {
+			await Menu.create({ id: uuid(), icon, name, title, sort, path })
 		}
-		const res = await exeSql(sql)
-		response.send(success(res))
+		response.send(success())
 	} catch (error) {
 		response.send(fail(error))
 	}
@@ -100,9 +88,8 @@ router.post('/insert/menu', async (req, response, next) => {
 router.post('/update/menu', async (req, response, next) => {
 	const { id, icon, name, title, sort, path } = req.body
 	try {
-		let sql = `update menu set name = '${name}',icon = '${icon}',title = '${title}',path = '${path}',sort = '${sort}' where id = '${id}'`
-		const res = await exeSql(sql)
-		response.send(success(res))
+		const data = await Menu.update({ icon, name, title, sort, path }, { where: { id } });
+		response.send(success(data))
 	} catch (error) {
 		response.send(fail(error))
 	}
@@ -118,8 +105,9 @@ router.post('/article/list', async (req, response, next) => {
 		let data = await Article.findAndCountAll({
 			where: {
 				title: {
-					[Op.like]: `%${title || ''}%`
+					[Op.like]: `%${title || ''}%`,
 				},
+				deleteTime: null
 			},
 			order: [['createTime', 'desc']],
 			limit: pageSize || 10,
@@ -153,9 +141,9 @@ router.post('/article/details', async (req, response, next) => {
 });
 /* 添加文章 */
 router.post('/insert/article', async (req, response, next) => {
-	const { title, content, userId,inputValue } = req.body
+	const { title, content, userId, inputValue } = req.body
 	try {
-		const res = await Article.create({ id: uuid(), title, content, userId,inputValue })
+		const res = await Article.create({ id: uuid(), title, content, userId, inputValue })
 		response.send(success(res))
 	} catch (error) {
 		response.send(fail(error))
@@ -166,9 +154,7 @@ router.post('/insert/article', async (req, response, next) => {
 router.post('/update/article', async (req, response, next) => {
 	const { id, title, content, inputValue } = req.body
 	try {
-		const data = await Article.update({title, content, inputValue }, { where: { id } });
-		// let sql = `update article set title = '${title}',content = '${content}',inputValue = '${inputValue}' where id = '${id}'`
-		// const res = await exeSql(sql)
+		const data = await Article.update({ title, content, inputValue }, { where: { id } });
 		response.send(success(data))
 	} catch (error) {
 		response.send(fail(error))
@@ -179,15 +165,12 @@ router.post('/update/article', async (req, response, next) => {
 router.post('/delete/article', async (req, response, next) => {
 	const { id } = req.body
 	try {
-		let sql = `update article set deleteTime = now() where id = '${id}'`
-		const res = await exeSql(sql)
-		response.send(success(res))
+		const data = await Article.update({ deleteTime: Sequelize.fn('NOW') }, { where: { id } });
+		response.send(success(data))
 	} catch (error) {
 		response.send(fail(error))
 	}
 });
-
-
 
 
 module.exports = router;

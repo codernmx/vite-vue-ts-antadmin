@@ -19,14 +19,14 @@ function success (res, total = null) {
 			data: res,
 			msg: '成功',
 			total,
-			timestemp: new Date().getTime()
+			timestamp: new Date().getTime()
 		}
 	} else {
 		return {
 			code: 200,
 			data: res,
 			msg: '成功',
-			timestemp: new Date().getTime()
+			timestamp: new Date().getTime()
 		}
 	}
 }
@@ -36,7 +36,7 @@ function fail (msg) {
 	return {
 		code: 500,
 		msg: msg.toString(),
-		timestemp: new Date().getTime()
+		timestamp: new Date().getTime()
 	}
 }
 
