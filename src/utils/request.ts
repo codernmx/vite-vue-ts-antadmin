@@ -31,12 +31,14 @@ request.interceptors.response.use(response => {
     loading.close()
     if (response.data.code !== 200) {
         if (response.data.code === 403) {
-            message.error(response.data.msg)
+            // message.error(response.data.msg)
             router.push('/login')
         }
-        if (response.data.code === 500) {
-            message.error(response.data.msg)
-        }
+        // if (response.data.code === 500) {
+        //     message.error(response.data.msg)
+        // }
+
+        message.error(response.data.msg)
         return Promise.reject(response.data.msg)
     } else {
         return response.data

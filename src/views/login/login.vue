@@ -1,3 +1,7 @@
+<!--
+ * @Date: 2023-05-12 11:45:13
+ * @LastEditTime: 2023-05-12 15:13:40
+-->
 <template>
   <div class="container">
     <canvas id="canvas" style="display: block"></canvas>

@@ -99,3 +99,42 @@ export function deleteArticle(data) {
         data
     })
 }
+
+
+/* 附件  */
+export function getFileList(data) {
+    return request({
+        url: `/api/file/list`,
+        method: 'POST',
+        data
+    })
+}
+
+
+export function insertFile(data) {
+    return request({
+        url: `/api/insert/file`,
+        method: 'POST',
+        data
+    })
+}
+
+
+export function updateFile(data) {
+    return request({
+        url: `/api/update/file`,
+        method: 'POST',
+        data
+    })
+}
+
+
+export function deleteFile(data) {
+    return request({
+        url: `/api/del/file`,
+        method: 'POST',
+        data
+    })
+}
+
+/* 附件 end */

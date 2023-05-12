@@ -5,7 +5,7 @@ var jwt = require('../utils/jwt')
 
 const { success, fail, uuid } = require('../utils/index');
 const { literal, Op, Sequelize } = require("sequelize");
-const { User, Article, Menu } = require('../models/index')
+const { User, Article, Menu, File } = require('../models/index')
 
 
 // // belongsTo 谁属于一个谁 / 一本书属于一个人
@@ -19,7 +19,7 @@ router.post('/login', async (req, response, next) => {
 	try {
 		const data = await User.findOne({ where: { name } });
 		if (data) {
-			const login = await User.findOne({ attributes: ['id', 'name','nickName'], where: { name, password: md5(password) } });
+			const login = await User.findOne({ attributes: ['id', 'name', 'nickName'], where: { name, password: md5(password) } });
 			if (login) {
 				const token = jwt.createToken({ name });
 				response.send(success({
@@ -171,6 +171,59 @@ router.post('/delete/article', async (req, response, next) => {
 		response.send(fail(error))
 	}
 });
+
+
+
+
+
+
+/* 附件 */
+/* 获取列表 */
+
+router.post('/file/list', async (req, response, next) => {
+	const { title, pageSize, pageNum } = req.body
+	try {
+		let data = await File.findAndCountAll({
+			where: {
+				name: {
+					[Op.like]: `%${title || ''}%`,
+				},
+				deleteTime: null
+			},
+			order: [['createTime', 'desc']],
+			limit: pageSize || 10,
+			offset: ((pageNum || 1) - 1) * (pageSize || 10),
+		});
+		response.send(success(data))
+	} catch (error) {
+		response.send(fail(error))
+	}
+});
+
+/* 删除 */
+router.post('/del/file', async (req, response, next) => {
+	const { id } = req.body
+	try {
+		const data = await File.destroy({ where: { id } });
+		response.send(success(data))
+	} catch (error) {
+		response.send(fail(error))
+	}
+});
+
+
+/* 更新菜单 */
+router.post('/update/file', async (req, response, next) => {
+	const { id, icon, name, title, sort, path } = req.body
+	try {
+		const data = await File.update({ icon, name, title, sort, path }, { where: { id } });
+		response.send(success(data))
+	} catch (error) {
+		response.send(fail(error))
+	}
+});
+
+/* 附件  结束 */
 
 
 module.exports = router;
