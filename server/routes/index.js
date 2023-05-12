@@ -19,7 +19,7 @@ router.post('/login', async (req, response, next) => {
 	try {
 		const data = await User.findOne({ where: { name } });
 		if (data) {
-			const login = await User.findOne({ where: { name, password: md5(password) } });
+			const login = await User.findOne({ attributes: ['id', 'name','nickName'], where: { name, password: md5(password) } });
 			if (login) {
 				const token = jwt.createToken({ name });
 				response.send(success({

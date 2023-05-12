@@ -82,7 +82,7 @@ import {useRouter} from 'vue-router'
 import {onMounted} from "vue";
 import useDemoStore from '@/store/modules/demo'
 import {storeToRefs} from 'pinia'
-import {message} from "_ant-design-vue@3.2.16@ant-design-vue";
+import {message} from "ant-design-vue";
 
 const demoStore = useDemoStore()
 const router = useRouter()

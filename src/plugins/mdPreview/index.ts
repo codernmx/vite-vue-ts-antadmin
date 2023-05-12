@@ -5,7 +5,7 @@ import '@kangc/v-md-editor/lib/theme/style/github.css';
 import vuepressTheme from '@kangc/v-md-editor/lib/theme/vuepress.js'
 import '@kangc/v-md-editor/lib/theme/style/vuepress.css'
 
-// highlightjs
+// // highlightjs
 import hljs from 'highlight.js';
 
 VMdPreview.use(vuepressTheme, {
