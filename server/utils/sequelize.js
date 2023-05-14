@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize')
 //new Sequelize('数据库名','用户名','密码',{配置信息})
 //2.使用sequelize模块配置和数据库的连接信息：创建连接数据库的对象
-const mysql_Sequelize = new Sequelize('v3-admin', 'root', '137928', {
+const mysql_Sequelize = new Sequelize('bjcx', 'root', '137928', {
 	host: '127.0.0.1', //数据库服务器的IP地址或域名
 	port: 3306, //数据库使用的端口号。MySQL数据库的默认端口号是3306
 	dialect: 'mysql',//数据库的类型

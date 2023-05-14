@@ -12,9 +12,17 @@ export default defineConfig({
       "@": resolve(__dirname, "./src")
     }
   },
-  server:{
-    host:'0.0.0.0',
-    hmr:true,
-    port:100,
+  server: {
+    host: '0.0.0.0',
+    hmr: true,
+    port: 100,
+    cors: true, // 允许跨域
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:3000/',//测试环境
+        changeOrigin: true,
+        // rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   }
 })

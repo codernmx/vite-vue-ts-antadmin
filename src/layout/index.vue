@@ -44,6 +44,7 @@ import Header from "./header.vue"
   border-radius: 5px;
   margin: 0;
   height: 100%;
+  overflow-y: scroll;
   padding: 10px;
 }
 

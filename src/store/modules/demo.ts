@@ -1,17 +1,18 @@
-import {defineStore} from 'pinia'
-import {ref, reactive} from 'vue'
-import {message} from 'ant-design-vue'
-import {getMenuList, loginApi} from '@/api/index'
+import { defineStore } from 'pinia'
+import { ref, reactive } from 'vue'
+import { message } from 'ant-design-vue'
+import { getMenuList, loginApi } from '@/api/index'
 
 const useDemoStore = defineStore('demo', () => {
     const show = ref(true)
-    const showMenu = ref(true)
+    const showMenu = ref(false)
 
     const data = reactive({
         menuList: [],
         tagList: ['首页'], //header上边的tag
         token: '',
         userInfo: {},
+        openKeys: [] //展开的菜单
     })
 
     const changeShow = () => {
@@ -20,6 +21,7 @@ const useDemoStore = defineStore('demo', () => {
     const clearToken = () => {
         data.token = ''
         data.userInfo = {}
+        data.menuList = []
     }
     const getToken = (userInfo) => {
         return new Promise((resolve, reject) => {
@@ -49,9 +51,9 @@ const useDemoStore = defineStore('demo', () => {
         message.success('切换成功')
     }
 
-    const getMenu = () => {
+    const getMenu = (id: String) => {
         return new Promise((resolve, reject) => {
-            getMenuList().then(res => {
+            getMenuList({ id }).then(res => {
                 data.menuList = res.data || []
                 resolve(res)
             }).catch(err => {
@@ -78,7 +80,8 @@ const useDemoStore = defineStore('demo', () => {
         key: 'demo', //缓存key
         storage: sessionStorage, //缓存方式
         // 部分持久化状态的点符号路径数组，默认持久化所有数据
-        paths: ['data.token', 'data.tagList', 'showMenu', 'data.userInfo'],  //持久化字段
+        // 'data.menuList'  刷新路由丢失
+        paths: ['data.token', 'data.tagList', 'showMenu', 'data.userInfo', 'data.openKeys'],  //持久化字段
     }
 })
 

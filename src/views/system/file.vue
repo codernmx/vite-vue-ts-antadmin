@@ -10,6 +10,12 @@
     </a-button>
     <a-table :columns="columns" :data-source="data.tableData" bordered :pagination="false" rowKey="id" class="top-10">
       <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'img'">
+          <a-image :width="75" :src="'https://bt.nmxgzs.cn/upload/' + record.path" />
+        </template>
+        <template v-if="column.key === 'name'">
+          <span @click="copy(record)">{{ record.name }}</span>
+        </template>
         <template v-if="column.key === 'action'">
           <div style="display: flex;justify-content: center;">
             <!-- <a @click.stop="editMenu(record)">编辑</a> -->
@@ -31,8 +37,8 @@
 
 
     <a-modal v-model:visible="visible" title="上传文件" @cancel="getList" @ok="visible = false; getList()">
-      <a-upload v-model:file-list="data.fileList" name="file" list-type="picture-card" :show-upload-list="false"
-        action="http://localhost:3000/api/upload/file" @change="handleChange">
+      <a-upload v-model:file-list=" data.fileList " name="file" list-type="picture-card" action="/api/upload/file"
+        @change=" handleChange " :headers=" headers ">
         <div>
           <plus-outlined></plus-outlined>
           <div class="ant-upload-text">Upload</div>
@@ -49,17 +55,21 @@ import { PlusOutlined } from '@ant-design/icons-vue'
 import { onMounted, ref, reactive } from 'vue'
 import { getFileList, deleteFile, insertArticle, updateArticle } from '@/api/index'
 import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
+import useDemoStore from '@/store/modules/demo'
 
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-
+const headers = {
+  token: useDemoStore().data.token
+}
 const visible = ref<boolean>(false)
 const current = ref<number>(1)
 const value = ref<string>('')
 const modelTitle = ref<string>('新增')
 const columns = [
+  { title: '预览', dataIndex: 'img', key: 'img' },
   { title: '名称', dataIndex: 'name', key: 'name' },
   { title: '历史名称', dataIndex: 'oldName', align: 'center' },
   { title: '路劲', dataIndex: 'path' },
@@ -104,6 +114,12 @@ const openChild = () => {
   data.form = {}
   modelTitle.value = '新增'
   visible.value = true
+}
+const copy = (record) => {
+  const url = 'https://bt.nmxgzs.cn/upload/' + record.path
+  navigator && navigator.clipboard && navigator.clipboard.writeText(url).then(res => {
+    message.success(`复制成功 ${url}`)
+  })
 }
 
 const getList = async () => {

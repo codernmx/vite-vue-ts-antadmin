@@ -21,10 +21,11 @@ export interface IUpdateData {
 }
 
 
-export function getMenuList() {
+export function getMenuList(data) {
     return request({
         url: `/api/menu/list`,
-        method: 'POST'
+        method: 'POST',
+        data
     })
 }
 
@@ -138,3 +139,45 @@ export function deleteFile(data) {
 }
 
 /* 附件 end */
+
+
+
+
+
+/* 角色相关----------------- */
+
+export function getRoleList(data) {
+    return request({
+        url: `/api/role/list`,
+        method: 'POST',
+        data
+    })
+}
+
+
+export function delRole(data) {
+    return request({
+        url: `/api/del/role`,
+        method: 'POST',
+        data
+    })
+}
+
+
+export function insertRole(data) {
+    return request({
+        url: `/api/insert/role`,
+        method: 'POST',
+        data
+    })
+}
+
+
+export function insertRoleMenu(data) {
+    return request({
+        url: `/api/insert/role/menu`,
+        method: 'POST',
+        data
+    })
+}
+/* 角色相关----------------- end */

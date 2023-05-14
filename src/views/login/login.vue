@@ -7,13 +7,12 @@
     <canvas id="canvas" style="display: block"></canvas>
     <div class="form">
       <h1>登 录</h1>
-      <a-form :model="form" name="basic" autocomplete="off"
-          @finish="onFinish" @finishFailed="onFinishFailed">
+      <a-form :model="form" name="basic" autocomplete="off" @finish="onFinish" @finishFailed="onFinishFailed">
         <a-form-item label="" name="name" :rules="[{ required: true, message: 'Please input your name!' }]">
-          <a-input v-model:value="form.name"/>
+          <a-input v-model:value="form.name" />
         </a-form-item>
         <a-form-item label="" name="password" :rules="[{ required: true, message: 'Please input your password!' }]">
-          <a-input-password v-model:value="form.password"/>
+          <a-input-password v-model:value="form.password" />
         </a-form-item>
         <a-button style="width: 100%" type="primary" html-type="submit">登录</a-button>
       </a-form>
@@ -24,8 +23,8 @@
 
 <script setup lang="ts">
 import initLoginBg from "./init"
-import {onMounted, ref, reactive} from 'vue'
-import {useRouter} from 'vue-router'
+import { onMounted, ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
@@ -41,13 +40,14 @@ interface FormState {
 }
 
 const form = reactive<FormState>({
-  name: 'admin',
+  name: 'Maisy',
   password: 'admin',
 });
 const onFinish = (values: any) => {
   console.log('Success:', values);
   demoStore.getToken(form).then(res => {
     if (res.data) {
+      sessionStorage.setItem('userId', res.data.id)
       router.push('/')
     }
   })

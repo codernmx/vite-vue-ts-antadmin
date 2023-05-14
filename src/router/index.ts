@@ -1,7 +1,7 @@
-import {createRouter, createWebHistory, createWebHashHistory} from "vue-router"
+import { createRouter, createWebHistory, createWebHashHistory } from "vue-router"
 
 import useDemoStore from '@/store/modules/demo'
-import {storeToRefs} from 'pinia'
+import { storeToRefs } from 'pinia'
 import Layout from '@/layout/index.vue'
 import fontLayout from '@/views/front/layout.vue'
 
@@ -37,7 +37,7 @@ const routes = [
         path: "/",
         component: Layout,
         redirect: '/home',
-        meta: {title: '首页'},
+        meta: { title: '首页' },
         children: [
             {
                 path: "/home",
@@ -66,7 +66,7 @@ function change(temp, isChildren = false) {
             item = {
                 name: item.name,
                 path: item.path,
-                meta: {title: item.title},
+                meta: { title: item.title },
                 component: modules[`../views${item.path}.vue`],
             }
             finalArr.push(item)
@@ -79,7 +79,7 @@ function change(temp, isChildren = false) {
             item = {
                 path: item.path,
                 component: Layout,
-                meta: {title: item.title},
+                meta: { title: item.title },
                 children: item.children || []
             }
             finalArr.push(item)
@@ -88,14 +88,13 @@ function change(temp, isChildren = false) {
     return finalArr
 }
 
-const whiteList = ['/login', '/404','/front/home']
+const whiteList = ['/login', '/404', '/front/home']
 //守卫
 router.beforeEach((to, from, next) => {
     //判断是否有权限返回登录界面
-    console.log(from.path, to.path, router.getRoutes().length)
     const demoStore = useDemoStore()
     demoStore.setTag(to.meta.title)
-    const {menuList} = storeToRefs(demoStore)
+    const { menuList } = storeToRefs(demoStore)
     if (demoStore.data.token) {
         if (whiteList.indexOf(to.path) !== -1) {
             next()
@@ -103,7 +102,7 @@ router.beforeEach((to, from, next) => {
             if (demoStore.data.menuList.length > 0) {
                 next()
             } else {
-                demoStore.getMenu().then(res => {
+                demoStore.getMenu(sessionStorage.getItem('userId')).then(res => {
                     const list = change(JSON.parse(JSON.stringify(res.data)))
                     list.forEach(item => {
                         router.addRoute(item)
@@ -112,7 +111,7 @@ router.beforeEach((to, from, next) => {
                         path: "/:pathMath(.*)", // ***此处需特别注意置于最底部***
                         redirect: "/404"
                     })
-                    next({...to, replace: true})
+                    next({ ...to, replace: true })
                 })
             }
 
