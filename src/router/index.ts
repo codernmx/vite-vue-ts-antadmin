@@ -92,7 +92,10 @@ const whiteList = ['/login', '/404', '/front/home']
 router.beforeEach((to, from, next) => {
     //判断是否有权限返回登录界面
     const demoStore = useDemoStore()
-    demoStore.setTag(to.meta.title)
+    demoStore.setTag({
+        name: to.meta.title,
+        path: to.path
+    })
     const { menuList } = storeToRefs(demoStore)
     if (demoStore.data.token) {
         if (whiteList.indexOf(to.path) !== -1) {

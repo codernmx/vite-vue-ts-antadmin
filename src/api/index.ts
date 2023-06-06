@@ -154,6 +154,22 @@ export function getRoleList(data) {
     })
 }
 
+export function getRoleListAll(data) {
+    return request({
+        url: `/api/role/list/all`,
+        method: 'POST',
+        data
+    })
+}
+
+export function updateUserRole(data) {
+    return request({
+        url: `/api/update/user/role`,
+        method: 'POST',
+        data
+    })
+}
+
 
 export function delRole(data) {
     return request({

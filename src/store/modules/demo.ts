@@ -1,3 +1,7 @@
+/*
+ * @Date: 2023-05-12 11:45:13
+ * @LastEditTime: 2023-06-06 15:56:10
+ */
 import { defineStore } from 'pinia'
 import { ref, reactive } from 'vue'
 import { message } from 'ant-design-vue'
@@ -9,7 +13,7 @@ const useDemoStore = defineStore('demo', () => {
 
     const data = reactive({
         menuList: [],
-        tagList: ['首页'], //header上边的tag
+        tagList: [], //header上边的tag
         token: '',
         userInfo: {},
         openKeys: [] //展开的菜单
@@ -34,9 +38,10 @@ const useDemoStore = defineStore('demo', () => {
             })
         })
     }
-    const setTag = (tag: string, del = false) => {
+    const setTag = (tag: Object, del = false) => {
+        const tagName = data.tagList.map(item => { return item.name })
         if (!del) {
-            if (tag && !data.tagList.includes(tag)) {
+            if (tag.name && !tagName.includes(tag.name)) {
                 data.tagList.push(tag)
             }
         } else {

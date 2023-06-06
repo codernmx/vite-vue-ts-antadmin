@@ -74,7 +74,7 @@ router.post('/menu/list', async (req, response, next) => {
 				},
 				raw: true
 			});
-			if(res.length === 0){
+			if (res.length === 0) {
 				response.send(fail('角色未分配菜单，请联系管理员~'))
 				return
 			}
@@ -288,18 +288,16 @@ router.post('/update/file', async (req, response, next) => {
 
 // 角色列表
 router.post('/role/list', async (req, response, next) => {
-	const { title, pageSize, pageNum } = req.body
+	const { name, pageSize, pageNum } = req.body
 	try {
 		let allMenu = await RoleMenu.findAll({
 			// attributes: ['menuId'],
 			raw: true
 		});
-
-
 		let data = await Role.findAndCountAll({
 			where: {
 				name: {
-					[Op.like]: `%${title || ''}%`,
+					[Op.like]: `%${name || ''}%`,
 				},
 				deleteTime: null
 			},
@@ -320,6 +318,35 @@ router.post('/role/list', async (req, response, next) => {
 		response.send(fail(error))
 	}
 });
+
+
+//获取所角色列表
+
+router.post('/role/list/all', async (req, response, next) => {
+	try {
+		let data = await Role.findAll({
+			attributes: ['id', 'name', 'remarks'],
+			raw: true
+		});
+		response.send(success(data))
+	} catch (error) {
+		response.send(fail(error))
+	}
+});
+
+//修改用户角色
+router.post('/update/user/role', async (req, response, next) => {
+	const { userId, roleId } = req.body
+	try {
+		await UserRole.destroy({ where: { userId } });
+		await UserRole.create({ id: uuid(), userId, roleId });
+		response.send(success('修改成功~'))
+	} catch (error) {
+		response.send(fail(error))
+	}
+});
+
+
 
 /* 删除角色 */
 router.post('/del/role', async (req, response, next) => {

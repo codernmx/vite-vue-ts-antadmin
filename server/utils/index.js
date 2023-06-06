@@ -12,27 +12,17 @@ function randomChar (length) {
 }
 
 //成功返回参数
-function success (res, total = null) {
-	if (total) {
-		return {
-			code: 200,
-			data: res,
-			msg: '成功',
-			total,
-			timestamp: new Date().getTime()
-		}
-	} else {
-		return {
-			code: 200,
-			data: res,
-			msg: '成功',
-			timestamp: new Date().getTime()
-		}
+function success (data = null) {
+	return {
+		code: 200,
+		data,
+		msg: '成功',
+		timestamp: new Date().getTime()
 	}
 }
 
 //失败参数
-function fail (msg) {
+function fail (msg = '内部错误') {
 	return {
 		code: 500,
 		msg: msg.toString(),

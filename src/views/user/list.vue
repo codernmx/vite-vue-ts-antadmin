@@ -1,6 +1,6 @@
 <!--
  * @Date: 2023-06-06 12:41:48
- * @LastEditTime: 2023-06-06 13:47:27
+ * @LastEditTime: 2023-06-06 15:05:41
 -->
 <template>
     <div>
@@ -41,21 +41,11 @@
             <a-input placeholder="请输入角色名称" v-model:value="data.form.name"></a-input>
             <a-input placeholder="请输入角色名称" v-model:value="data.form.remarks" style="margin-top: 10px;"></a-input>
         </a-modal>
-
-
-
-        <a-modal v-model:visible="authVisible" title="权限" @ok="authSubmit">
-            <a-tree v-model:selectedKeys="selectedKeys" v-model:checkedKeys="checkedKeys" default-expand-all checkable
-                :height="233" :tree-data="data.treeData" @check="check" :field-names="fieldNames">
-                <template #title="{ title, key }">
-                    <span v-if="key === '0-0-1-0'" style="color: #1890ff">{{ title }}</span>
-                    <template v-else>{{ title }}</template>
-                </template>
-            </a-tree>
-
+        <a-modal v-model:visible="authVisible" title="角色权限" @ok="updateUserRoleOk">
+            <a-select ref="select" v-model:value="value" style="width: 100%">
+                <a-select-option :value="item.id" v-for="item in data.roleAll">{{ item.name }}</a-select-option>
+            </a-select>
         </a-modal>
-
-
     </div>
 </template>
 <script setup lang="ts">
@@ -64,24 +54,20 @@ import type { TreeProps } from 'ant-design-vue';
 import { message } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import { onMounted, ref, reactive } from 'vue'
-import { getUserList, deleteUser, updateUser, insertUser } from '@/api/index'
+import { getUserList, deleteUser, updateUser, insertUser, getRoleListAll, updateUserRole } from '@/api/index'
 import useDemoStore from '@/store/modules/demo'
 
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const headers = {
-    token: useDemoStore().data.token
-}
+
 const visible = ref<boolean>(false)
 const authVisible = ref<boolean>(false)
 const current = ref<number>(1)
 const value = ref<string>('')
 const modelTitle = ref<string>('新增')
 
-
-const selectedKeys = ref<string[]>([]);
 const checkedKeys = ref<string[]>([]);
 
 
@@ -116,16 +102,11 @@ const data = reactive({
     form: {},
     total: 0,
     title: '',
+    roleAll: []//所有角色
 })
 
 
-const fieldNames: TreeProps['fieldNames'] = {
-    children: 'children',
-    title: 'title',
-    key: 'id'
-};
-
-const onChange = (pageNumber: number, pageSize) => {
+const onChange = (pageNumber: number, pageSize: number) => {
     console.log('Page: ', pageNumber)
     data.page.pageNum = pageNumber
     data.page.pageSize = pageSize
@@ -145,21 +126,12 @@ const check = (check, e) => {
 }
 
 
-const authSubmit = () => {
-    //这里需要注意下父级id 如何处理
-    let menuList = []
-    checkedKeys.value.forEach(item => {
-        menuList.push({
-            roleId: data.row.id,
-            menuId: item
-        })
-    })
-
-    insertRoleMenu({
-        menuList,
-        roleId: data.row.id
+const updateUserRoleOk = async () => {
+    updateUserRole({
+        userId: data.row.id,
+        roleId: value.value
     }).then(res => {
-        message.success('成功')
+        message.success(res.data)
         authVisible.value = false
     })
 }
@@ -188,6 +160,13 @@ const getList = async () => {
     } catch (err) {
     }
 }
+const getRoleAll = async () => {
+    try {
+        const res = await getRoleListAll()
+        data.roleAll = res.data || []
+    } catch (err) {
+    }
+}
 const del = async ({ id }) => {
     const res = await deleteUser({ id })
     message.success('成功')
@@ -213,6 +192,7 @@ const close = () => {
 }
 onMounted(() => {
     getList()
+    getRoleAll()
 })
 </script>
 <style scoped lang="less"></style>
