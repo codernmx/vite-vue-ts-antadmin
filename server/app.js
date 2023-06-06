@@ -1,9 +1,15 @@
+/*
+ * @Date: 2023-05-12 11:45:13
+ * @LastEditTime: 2023-06-06 13:29:20
+ */
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var Index = require('./routes/index');
+var User = require('./routes/user');
+var Log = require('./routes/log');
 var Upload = require('./routes/upload');
 var jwt = require('./utils/jwt')
 
@@ -46,6 +52,8 @@ app.use(function (req, res, next) {
 });
 
 app.use('/api', Index);
+app.use('/api', User);
+app.use('/api', Log);
 app.use('/api/upload', Upload);
 
 const mysql_test = require('./utils/sequelize')

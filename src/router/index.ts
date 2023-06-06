@@ -60,8 +60,7 @@ const router = createRouter({
 function change(temp, isChildren = false) {
     let finalArr = []
     if (isChildren) {
-        //只针对 system下的有效  后期优化
-        let modules = import.meta.glob("../views/system/*.vue")
+        let modules = import.meta.glob(`../views/**/*.vue`)
         temp.forEach(item => {
             item = {
                 name: item.name,
@@ -71,7 +70,7 @@ function change(temp, isChildren = false) {
             }
             finalArr.push(item)
         })
-    } else {
+    } else { //这里是一级菜单
         temp.forEach(item => {
             if (item.children && item.children.length > 0) {
                 item.children = change(item.children, true)

@@ -74,7 +74,10 @@ router.post('/menu/list', async (req, response, next) => {
 				},
 				raw: true
 			});
-
+			if(res.length === 0){
+				response.send(fail('角色未分配菜单，请联系管理员~'))
+				return
+			}
 			let temp = []
 			res.forEach(item => {
 				temp.push(allMenu.filter(v => v.id == item.menuId)[0])

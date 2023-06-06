@@ -181,3 +181,99 @@ export function insertRoleMenu(data) {
     })
 }
 /* 角色相关----------------- end */
+
+
+
+
+
+
+/* 用户相关         */
+
+export function getUserList(data) {
+    return request({
+        url: `/api/user/list`,
+        method: 'POST',
+        data
+    })
+}
+export function getUserDetails(data) {
+    return request({
+        url: `/api/user/details`,
+        method: 'POST',
+        data
+    })
+}
+
+export function insertUser(data) {
+    return request({
+        url: `/api/insert/user`,
+        method: 'POST',
+        data
+    })
+}
+
+
+export function updateUser(data) {
+    return request({
+        url: `/api/update/user`,
+        method: 'POST',
+        data
+    })
+}
+export function deleteUser(data) {
+    return request({
+        url: `/api/delete/user`,
+        method: 'POST',
+        data
+    })
+}
+
+
+/* 用户相关        end */
+
+
+
+
+/* 日志相关         */
+
+export function getLogList(data) {
+    return request({
+        url: `/api/log/list`,
+        method: 'POST',
+        data
+    })
+}
+export function getLogDetails(data) {
+    return request({
+        url: `/api/log/details`,
+        method: 'POST',
+        data
+    })
+}
+
+export function insertLog(data) {
+    return request({
+        url: `/api/insert/log`,
+        method: 'POST',
+        data
+    })
+}
+
+
+export function updateLog(data) {
+    return request({
+        url: `/api/update/log`,
+        method: 'POST',
+        data
+    })
+}
+export function deleteLog(data) {
+    return request({
+        url: `/api/delete/log`,
+        method: 'POST',
+        data
+    })
+}
+
+
+/* 日志相关        end */
