@@ -171,6 +171,15 @@ export function updateUserRole(data) {
 }
 
 
+export function getRoleIdByUserId(data) {
+    return request({
+        url: `/api/getRoleIdByUserId`,
+        method: 'POST',
+        data
+    })
+}
+
+
 export function delRole(data) {
     return request({
         url: `/api/del/role`,
@@ -188,6 +197,13 @@ export function insertRole(data) {
     })
 }
 
+export function updateRole(data) {
+    return request({
+        url: `/api/update/role`,
+        method: 'POST',
+        data
+    })
+}
 
 export function insertRoleMenu(data) {
     return request({

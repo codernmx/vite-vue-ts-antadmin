@@ -1,10 +1,10 @@
 <template>
   <div>
-    <a-input v-model:value="data.title" placeholder="搜索一些啥" style="width:200px" allowClear />
+    <a-input v-model:value="data.title" placeholder="搜索一些啥" style="width:200px" allowClear/>
     <a-button type="primary" class="ml-10" @click="getList">搜 索</a-button>
     <a-button type="primary" class="ml-10" @click="openChild">
       <template #icon>
-        <plus-outlined />
+        <plus-outlined/>
       </template>
       新增
     </a-button>
@@ -12,7 +12,8 @@
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'action'">
           <div style="display: flex;justify-content:space-between;">
-            <a @click="editRole(record)">权限</a>
+            <a @click="setAuth(record)">菜单权限</a>
+            <a @click="editRole(record)">编辑</a>
             <a-popconfirm title="是否确认删除？" ok-text="确定" cancel-text="取消" @confirm="del(record)">
               <a @click.top="">删除</a>
             </a-popconfirm>
@@ -24,7 +25,7 @@
 
     <div class="center top-10">
       <a-pagination v-model:current="current" :show-total="total => `总数 ${total}`" showSizeChanger :total="data.total"
-        @change="onChange">
+                    @change="onChange">
         <template #buildOptionText="props">
           <span>{{ props.value }}条/页</span>
         </template>
@@ -38,11 +39,9 @@
     </a-modal>
 
 
-
     <a-modal v-model:visible="authVisible" title="权限" @ok="authSubmit">
-
       <a-tree v-model:selectedKeys="selectedKeys" v-model:checkedKeys="checkedKeys" default-expand-all checkable
-        :height="233" :tree-data="data.treeData" @check="check" :field-names="fieldNames">
+              :height="233" :tree-data="data.treeData" @check="check" :field-names="fieldNames">
         <template #title="{ title, key }">
           <span v-if="key === '0-0-1-0'" style="color: #1890ff">{{ title }}</span>
           <template v-else>{{ title }}</template>
@@ -56,14 +55,14 @@
 </template>
 <script setup lang="ts">
 
-import type { TreeProps } from 'ant-design-vue';
-import { message } from 'ant-design-vue'
-import { PlusOutlined } from '@ant-design/icons-vue'
-import { onMounted, ref, reactive } from 'vue'
-import { getRoleList, delRole, updateArticle, insertRole, getMenuList, insertRoleMenu } from '@/api/index'
+import type {TreeProps} from 'ant-design-vue';
+import {message} from 'ant-design-vue'
+import {PlusOutlined} from '@ant-design/icons-vue'
+import {onMounted, ref, reactive} from 'vue'
+import {getRoleList, delRole, updateArticle, insertRole, updateRole, getMenuList, insertRoleMenu} from '@/api/index'
 import useDemoStore from '@/store/modules/demo'
 
-import { useRouter } from 'vue-router'
+import {useRouter} from 'vue-router'
 
 const router = useRouter()
 
@@ -81,12 +80,11 @@ const selectedKeys = ref<string[]>([]);
 const checkedKeys = ref<string[]>([]);
 
 
-
 const columns = [
-  { title: '角色名称', dataIndex: 'name', key: 'name' },
-  { title: '备注信息', dataIndex: 'remarks', align: 'center' },
-  { title: '创建时间', dataIndex: 'createTime' },
-  { title: '操作', key: 'action', width: 160, align: 'center' },
+  {title: '角色名称', dataIndex: 'name', key: 'name'},
+  {title: '备注信息', dataIndex: 'remarks', align: 'center'},
+  {title: '创建时间', dataIndex: 'createTime'},
+  {title: '操作', key: 'action', width: 160, align: 'center'},
 ]
 
 const data = reactive({
@@ -151,39 +149,46 @@ const authSubmit = () => {
 
 const submit = async () => {
   if (!data.form.name || !data.form.remarks) {
-    message.error('请填写内容')
+    message.error('请完整填写内容~')
     return false
   }
   if (modelTitle.value == '新增') {
     const res = await insertRole(data.form)
-    message.success('成功')
+    message.success(res.data)
     getList()
   } else {
-
+    const res = await updateRole(data.form)
+    message.success('成功')
+    getList()
   }
   visible.value = false
 }
 
 const getList = async () => {
   try {
-    const res = await getRoleList({ ...data.page, title: data.title })
+    const res = await getRoleList({...data.page, title: data.title})
     data.tableData = res.data.rows || []
     data.total = res.data.count
   } catch (err) {
   }
 }
-const del = async ({ id }) => {
-  const res = await delRole({ id })
+const del = async ({id}) => {
+  const res = await delRole({id})
   message.success('成功')
   getList()
 }
 
-const editRole = (record) => {
+const setAuth = (record) => {
   authVisible.value = true
   data.row = record
   checkedKeys.value = record.menuId
   // data.form = Object.assign({}, { id, title, content: inputValue })
   // modelTitle.value = '编辑'
+}
+const editRole = ({id, name, remarks}) => {
+  visible.value = true
+  data.form = Object.assign({}, {id, name, remarks})
+  modelTitle.value = '编辑'
 }
 
 const update = async (params) => {

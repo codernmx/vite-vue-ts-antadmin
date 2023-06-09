@@ -3,6 +3,9 @@
       @cancel="cancel">
     <a-form labelAlign="left" ref="formRef" :model="formState" name="basic" :label-col="{ span: 4 }"
         :wrapper-col="{ span: 20 }" autocomplete="off" @finish="onFinish" @finishFailed="onFinishFailed">
+      <a-form-item label="父级ID" v-if="props.form.parId" :rules="[{ required: true, message: 'Please input your title!' }]">
+        <a-input v-model:value="props.form.parId" disabled />
+      </a-form-item>
       <a-form-item label="菜单标题" name="title" :rules="[{ required: true, message: 'Please input your title!' }]">
         <a-input v-model:value="formState.title"/>
       </a-form-item>
