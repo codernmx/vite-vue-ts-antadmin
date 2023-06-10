@@ -20,6 +20,7 @@
         <template v-if="column.key === 'action'">
           <div style="display: flex;justify-content:space-between;">
             <a @click="editRole(record)">分配角色</a>
+            <a @click="updateUserStatus(record)">{{ record.status == 0 ? '停用' : '启用' }}</a>
             <a-popconfirm title="是否确认删除？" ok-text="确定" cancel-text="取消" @confirm="del(record)">
               <a @click.top="">删除</a>
             </a-popconfirm>
@@ -88,7 +89,7 @@ const columns = [
   {title: 'openId', dataIndex: 'openId'},
   {title: '邮箱', dataIndex: 'email'},
   {title: '累计登录次数', dataIndex: 'loginNum'},
-  {title: '最近登录时间', dataIndex: 'updateTime'},
+  {title: '最近操作时间', dataIndex: 'updateTime'},
   {title: '创建时间', dataIndex: 'createTime'},
   {title: '操作', key: 'action', width: 160, align: 'center'},
 ]
@@ -178,16 +179,17 @@ const del = async ({id}) => {
 }
 
 const editRole = async (record) => {
-  value.value = ''
   authVisible.value = true
   data.row = record
   checkedKeys.value = record.menuId
   const res  = await getRoleIdByUserId({userId:record.id})
-  if(res.data && res.data.roleId){
-    value.value = res.data.roleId
-  }
+  value.value = res.data ? res.data.roleId : ''
   // data.form = Object.assign({}, { id, title, content: inputValue })
   // modelTitle.value = '编辑'
+}
+
+const updateUserStatus = (row)=>{
+  update({id:row.id,status:row.status == 0 ? 1 : 0})
 }
 
 const update = async (params) => {
