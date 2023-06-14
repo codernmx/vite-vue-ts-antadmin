@@ -15,7 +15,7 @@
             <a @click="setAuth(record)">下载</a>
             <!--<a @click="editRole(record)">编辑</a>-->
             <a-popconfirm title="是否确认删除？" ok-text="确定" cancel-text="取消" @confirm="del(record)">
-              <a @click.top="">设置不展示</a>
+              <a @click.top="" v-if="!record.deleteTime">设置不展示</a>
             </a-popconfirm>
           </div>
         </template>
@@ -59,7 +59,7 @@ import type { TreeProps } from 'ant-design-vue';
 import { message } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import { onMounted, ref, reactive } from 'vue'
-import { getGatherList, delRole, updateArticle, insertRole, updateRole, getMenuList, insertRoleMenu } from '@/api/index'
+import { getGatherList, delGather, updateArticle, insertGather, updateRole, getMenuList, insertRoleMenu } from '@/api/index'
 import useDemoStore from '@/store/modules/demo'
 
 import { useRouter } from 'vue-router'
@@ -153,7 +153,7 @@ const submit = async () => {
     return false
   }
   if (modelTitle.value == '新增') {
-    const res = await insertRole(data.form)
+    const res = await insertGather(data.form)
     message.success(res.data)
     getList()
   } else {
@@ -173,7 +173,7 @@ const getList = async () => {
   }
 }
 const del = async ({ id }) => {
-  const res = await delRole({ id })
+  const res = await delGather({ id })
   message.success('成功')
   getList()
 }

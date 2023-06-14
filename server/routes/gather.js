@@ -79,8 +79,8 @@ router.get('/already/upload/list', async (req, response, next) => {
 
 
 /* 删除项目（软删除） */
-router.get('/gather/delete', async (req, response, next) => {
-    const { id } = req.query
+router.post('/gather/delete', async (req, response, next) => {
+    const { id } = req.body
     try {
         const res = await Gather.update({ deleteTime: Sequelize.fn('NOW') }, { where: { id } });
         response.send(success(res))

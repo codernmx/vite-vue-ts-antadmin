@@ -290,3 +290,21 @@ export function getGatherList(params) {
         params
     })
 }
+
+
+//新增收集
+export function insertGather(data) {
+    return request({
+        url: `/api/applet/gather/insert`,
+        method: 'POST',
+        data
+    })
+}
+//删除收集项目
+export function delGather(data) {
+    return request({
+        url: `/api/applet/gather/delete`,
+        method: 'POST',
+        data
+    })
+}
