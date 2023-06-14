@@ -1,10 +1,10 @@
 <template>
   <div>
-    <a-input v-model:value="data.title" placeholder="搜索一些啥" style="width:200px" allowClear/>
+    <a-input v-model:value="data.title" placeholder="搜索一些啥" style="width:200px" allowClear />
     <a-button type="primary" class="ml-10" @click="getList">搜 索</a-button>
     <a-button type="primary" class="ml-10" @click="openChild">
       <template #icon>
-        <plus-outlined/>
+        <plus-outlined />
       </template>
       新增
     </a-button>
@@ -24,8 +24,8 @@
 
 
     <div class="center top-10">
-      <a-pagination v-model:current="current" :show-total="total => `总数 ${total}`" showSizeChanger :total="data.total"
-                    @change="onChange">
+      <a-pagination v-model:current="current" :show-total="(total: any) => `总数 ${total}`" showSizeChanger
+        :total="data.total" @change="onChange">
         <template #buildOptionText="props">
           <span>{{ props.value }}条/页</span>
         </template>
@@ -41,7 +41,7 @@
 
     <a-modal v-model:visible="authVisible" title="权限" @ok="authSubmit">
       <a-tree v-model:selectedKeys="selectedKeys" v-model:checkedKeys="checkedKeys" default-expand-all checkable
-              :height="233" :tree-data="data.treeData" @check="check" :field-names="fieldNames">
+        :height="233" :tree-data="data.treeData" @check="check" :field-names="fieldNames">
         <template #title="{ title, key }">
           <span v-if="key === '0-0-1-0'" style="color: #1890ff">{{ title }}</span>
           <template v-else>{{ title }}</template>
@@ -55,14 +55,14 @@
 </template>
 <script setup lang="ts">
 
-import type {TreeProps} from 'ant-design-vue';
-import {message} from 'ant-design-vue'
-import {PlusOutlined} from '@ant-design/icons-vue'
-import {onMounted, ref, reactive} from 'vue'
-import {getRoleList, delRole, updateArticle, insertRole, updateRole, getMenuList, insertRoleMenu} from '@/api/index'
+import type { TreeProps } from 'ant-design-vue';
+import { message } from 'ant-design-vue'
+import { PlusOutlined } from '@ant-design/icons-vue'
+import { onMounted, ref, reactive } from 'vue'
+import { getRoleList, delRole, updateArticle, insertRole, updateRole, getMenuList, insertRoleMenu } from '@/api/index'
 import useDemoStore from '@/store/modules/demo'
 
-import {useRouter} from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
@@ -81,10 +81,10 @@ const checkedKeys = ref<string[]>([]);
 
 
 const columns = [
-  {title: '角色名称', dataIndex: 'name', key: 'name'},
-  {title: '备注信息', dataIndex: 'remarks', align: 'center'},
-  {title: '创建时间', dataIndex: 'createTime'},
-  {title: '操作', key: 'action', width: 160, align: 'center'},
+  { title: '角色名称', dataIndex: 'name', key: 'name' },
+  { title: '备注信息', dataIndex: 'remarks', align: 'center' },
+  { title: '创建时间', dataIndex: 'createTime' },
+  { title: '操作', key: 'action', width: 160, align: 'center' },
 ]
 
 const data = reactive({
@@ -107,7 +107,7 @@ const fieldNames: TreeProps['fieldNames'] = {
   key: 'id'
 };
 
-const onChange = (pageNumber: number, pageSize) => {
+const onChange = (pageNumber: number, pageSize: number) => {
   console.log('Page: ', pageNumber)
   data.page.pageNum = pageNumber
   data.page.pageSize = pageSize
@@ -121,7 +121,7 @@ const openChild = () => {
   visible.value = true
 }
 
-const check = (check, e) => {
+const check = (check: any, e: any) => {
   console.log(check, e);
   console.log(checkedKeys.value, 'checkedKeys');
 }
@@ -166,14 +166,14 @@ const submit = async () => {
 
 const getList = async () => {
   try {
-    const res = await getRoleList({...data.page, title: data.title})
+    const res = await getRoleList({ ...data.page, title: data.title })
     data.tableData = res.data.rows || []
     data.total = res.data.count
   } catch (err) {
   }
 }
-const del = async ({id}) => {
-  const res = await delRole({id})
+const del = async ({ id }) => {
+  const res = await delRole({ id })
   message.success('成功')
   getList()
 }
@@ -185,9 +185,9 @@ const setAuth = (record) => {
   // data.form = Object.assign({}, { id, title, content: inputValue })
   // modelTitle.value = '编辑'
 }
-const editRole = ({id, name, remarks}) => {
+const editRole = ({ id, name, remarks }) => {
   visible.value = true
-  data.form = Object.assign({}, {id, name, remarks})
+  data.form = Object.assign({}, { id, name, remarks })
   modelTitle.value = '编辑'
 }
 

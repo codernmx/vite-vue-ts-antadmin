@@ -5,22 +5,22 @@
 </template>
 
 <script setup lang="ts">
-import {getArticleDetails} from '@/api/index'
-import {reactive,onMounted} from "vue";
-import {useRouter,useRoute} from 'vue-router'
+import { getArticleDetails } from '@/api/index'
+import { reactive, onMounted } from "vue";
+import { useRouter, useRoute } from 'vue-router'
 
 const route = useRoute()
 
 const data = reactive({
-  text:''
+  text: ''
 })
 
-const change=(text, html)=>{
+const change = (text: string, html: string) => {
   console.log(text, html)
 }
 
 onMounted(() => {
-  getArticleDetails({id:route.query.id}).then(res=>{
+  getArticleDetails({ id: route.query.id }).then(res => {
     console.log(res)
     data.text = res.data.content
   })
@@ -29,7 +29,7 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-.container{
+.container {
   margin: 0 10%;
   min-height: 520px;
 }

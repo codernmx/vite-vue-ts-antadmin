@@ -1,5 +1,7 @@
 import request from '@/utils/request'
 
+
+import { ArticleList, InsertOrUpArticle, LogList, UserList, UpdateUserRole, FileList, insertOrUpdateRole } from '@/type/api'
 export interface IDelData {
     id?: string
 }
@@ -21,7 +23,7 @@ export interface IUpdateData {
 }
 
 
-export function getMenuList(data) {
+export function getMenuList(data: { id?: string }) {
     return request({
         url: `/api/menu/list`,
         method: 'POST',
@@ -62,14 +64,14 @@ export function loginApi(data: IUpdateData) {
 }
 
 
-export function getArticleList(data) {
+export function getArticleList(data: ArticleList) {
     return request({
         url: `/api/article/list`,
         method: 'POST',
         data
     })
 }
-export function getArticleDetails(data) {
+export function getArticleDetails(data: IDelData) {
     return request({
         url: `/api/article/details`,
         method: 'POST',
@@ -77,7 +79,7 @@ export function getArticleDetails(data) {
     })
 }
 
-export function insertArticle(data) {
+export function insertArticle(data: InsertOrUpArticle) {
     return request({
         url: `/api/insert/article`,
         method: 'POST',
@@ -86,14 +88,14 @@ export function insertArticle(data) {
 }
 
 
-export function updateArticle(data) {
+export function updateArticle(data: InsertOrUpArticle) {
     return request({
         url: `/api/update/article`,
         method: 'POST',
         data
     })
 }
-export function deleteArticle(data) {
+export function deleteArticle(data: IDelData) {
     return request({
         url: `/api/delete/article`,
         method: 'POST',
@@ -103,7 +105,7 @@ export function deleteArticle(data) {
 
 
 /* 附件  */
-export function getFileList(data) {
+export function getFileList(data: FileList) {
     return request({
         url: `/api/file/list`,
         method: 'POST',
@@ -112,25 +114,9 @@ export function getFileList(data) {
 }
 
 
-export function insertFile(data) {
-    return request({
-        url: `/api/insert/file`,
-        method: 'POST',
-        data
-    })
-}
 
 
-export function updateFile(data) {
-    return request({
-        url: `/api/update/file`,
-        method: 'POST',
-        data
-    })
-}
-
-
-export function deleteFile(data) {
+export function deleteFile(data: IDelData) {
     return request({
         url: `/api/del/file`,
         method: 'POST',
@@ -146,7 +132,7 @@ export function deleteFile(data) {
 
 /* 角色相关----------------- */
 
-export function getRoleList(data) {
+export function getRoleList(data: UserList) {
     return request({
         url: `/api/role/list`,
         method: 'POST',
@@ -154,15 +140,14 @@ export function getRoleList(data) {
     })
 }
 
-export function getRoleListAll(data) {
+export function getRoleListAll() {
     return request({
         url: `/api/role/list/all`,
         method: 'POST',
-        data
     })
 }
 
-export function updateUserRole(data) {
+export function updateUserRole(data: UpdateUserRole) {
     return request({
         url: `/api/update/user/role`,
         method: 'POST',
@@ -171,7 +156,7 @@ export function updateUserRole(data) {
 }
 
 
-export function getRoleIdByUserId(data) {
+export function getRoleIdByUserId(data: { userId: string }) {
     return request({
         url: `/api/getRoleIdByUserId`,
         method: 'POST',
@@ -180,7 +165,7 @@ export function getRoleIdByUserId(data) {
 }
 
 
-export function delRole(data) {
+export function delRole(data: IDelData) {
     return request({
         url: `/api/del/role`,
         method: 'POST',
@@ -189,7 +174,7 @@ export function delRole(data) {
 }
 
 
-export function insertRole(data) {
+export function insertRole(data: insertOrUpdateRole) {
     return request({
         url: `/api/insert/role`,
         method: 'POST',
@@ -197,7 +182,7 @@ export function insertRole(data) {
     })
 }
 
-export function updateRole(data) {
+export function updateRole(data: insertOrUpdateRole) {
     return request({
         url: `/api/update/role`,
         method: 'POST',
@@ -205,7 +190,12 @@ export function updateRole(data) {
     })
 }
 
-export function insertRoleMenu(data) {
+
+interface insertRoleMenu {
+    menuList: any[]
+    roleId: string
+}
+export function insertRoleMenu(data: insertRoleMenu) {
     return request({
         url: `/api/insert/role/menu`,
         method: 'POST',
@@ -221,22 +211,16 @@ export function insertRoleMenu(data) {
 
 /* 用户相关         */
 
-export function getUserList(data) {
+export function getUserList(data: UserList) {
     return request({
         url: `/api/user/list`,
         method: 'POST',
         data
     })
 }
-export function getUserDetails(data) {
-    return request({
-        url: `/api/user/details`,
-        method: 'POST',
-        data
-    })
-}
 
-export function insertUser(data) {
+
+export function insertUser(data: any) { //暂时没调
     return request({
         url: `/api/insert/user`,
         method: 'POST',
@@ -245,14 +229,14 @@ export function insertUser(data) {
 }
 
 
-export function updateUser(data) {
+export function updateUser(data: { id: string, status: number }) { //这个有共用的 type
     return request({
         url: `/api/update/user`,
         method: 'POST',
         data
     })
 }
-export function deleteUser(data) {
+export function deleteUser(data: IDelData) {
     return request({
         url: `/api/delete/user`,
         method: 'POST',
@@ -268,38 +252,15 @@ export function deleteUser(data) {
 
 /* 日志相关         */
 
-export function getLogList(data) {
+export function getLogList(data: LogList) {
     return request({
         url: `/api/log/list`,
         method: 'POST',
         data
     })
 }
-export function getLogDetails(data) {
-    return request({
-        url: `/api/log/details`,
-        method: 'POST',
-        data
-    })
-}
 
-export function insertLog(data) {
-    return request({
-        url: `/api/insert/log`,
-        method: 'POST',
-        data
-    })
-}
-
-
-export function updateLog(data) {
-    return request({
-        url: `/api/update/log`,
-        method: 'POST',
-        data
-    })
-}
-export function deleteLog(data) {
+export function deleteLog(data: IDelData) {
     return request({
         url: `/api/delete/log`,
         method: 'POST',

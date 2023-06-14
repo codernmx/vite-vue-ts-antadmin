@@ -1,34 +1,26 @@
 <template>
-  <a-modal okText="提交" cancelText="取消" v-model:visible="visible" :title="props.title" width="60%" wrap-class-name="full-modal" @ok="handleOk"
-      @cancel="cancel">
+  <a-modal okText="提交" cancelText="取消" v-model:visible="visible" :title="props.title" width="60%"
+    wrap-class-name="full-modal" @ok="handleOk" @cancel="cancel">
     <a-form labelAlign="left" ref="formRef" :model="formState" name="basic" :label-col="{ span: 4 }"
-        :wrapper-col="{ span: 20 }" autocomplete="off" @finish="onFinish" @finishFailed="onFinishFailed">
+      :wrapper-col="{ span: 20 }" autocomplete="off" @finish="onFinish" @finishFailed="onFinishFailed">
       <a-form-item label="文章标题" name="title" :rules="[{ required: true, message: 'Please input your title!' }]">
-        <a-input v-model:value="formState.title"/>
+        <a-input v-model:value="formState.title" />
       </a-form-item>
       <a-form-item label="内容" name="content" :rules="[{ required: true, message: 'Please input your content!' }]">
-        <v-md-editor v-model="formState.content" height="400px" @change="change" @upload-image="handleUploadImage" :disabled-menus="[]"></v-md-editor>
+        <v-md-editor v-model="formState.content" height="400px" @change="change" @upload-image="handleUploadImage"
+          :disabled-menus="[]"></v-md-editor>
       </a-form-item>
-      <!--<a-form-item label="菜单路径" name="path" :rules="[{ required: true, message: 'Please input your path!' }]">-->
-      <!--  <a-input v-model:value="formState.path"/>-->
-      <!--</a-form-item>-->
-      <!--<a-form-item label="菜单name" name="name" :rules="[{ required: true, message: 'Please input your name!' }]">-->
-      <!--  <a-input v-model:value="formState.name"/>-->
-      <!--</a-form-item>-->
-      <!--<a-form-item label="菜单排序" name="sort" :rules="[{ required: true, message: 'Please input your sort!' }]">-->
-      <!--  <a-input v-model:value="formState.sort"/>-->
-      <!--</a-form-item>-->
     </a-form>
   </a-modal>
 </template>
 <script setup lang="ts">
-import {message} from 'ant-design-vue'
+import { message } from 'ant-design-vue'
 import axios from 'axios'
-import {PlusOutlined} from '@ant-design/icons-vue'
-import {onMounted, ref, reactive, watch} from 'vue'
-import type {FormInstance} from 'ant-design-vue'
+import { PlusOutlined } from '@ant-design/icons-vue'
+import { onMounted, ref, reactive, watch } from 'vue'
+import type { FormInstance } from 'ant-design-vue'
 import useDemoStore from '@/store/modules/demo'
-import {storeToRefs} from 'pinia'
+import { storeToRefs } from 'pinia'
 
 const demoStore = useDemoStore()
 
@@ -80,7 +72,7 @@ const handleUploadImage = (event, insertImage, files) => {
     console.log(res)
     // 上传成功后的处理
     insertImage({
-      url:res.data.url,
+      url: res.data.url,
       desc: file.name,
       width: 'auto',
       height: 'auto',
@@ -95,7 +87,7 @@ const handleUploadImage = (event, insertImage, files) => {
 const handleOk = async (e: MouseEvent) => {
   try {
     const values = await formRef.value.validateFields()
-    emits('submit', {userId: demoStore.data.userInfo.id, id: props.form?.id, ...formState, content: content.value})
+    emits('submit', { userId: demoStore.data.userInfo.id, id: props.form?.id, ...formState, content: content.value })
   } catch (errorInfo) {
     console.log(errorInfo);
     message.error('请填写完整信息')

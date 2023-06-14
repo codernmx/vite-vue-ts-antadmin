@@ -14,7 +14,7 @@ onMounted(() => {
 
 // 基础配置一下Echarts
 function initChart() {
-  let chart = echarts.init(document.getElementById("myEcharts"), "dark");
+  let chart = echarts.init(document.getElementById("myEcharts") as HTMLElement, "dark");
   // 把配置和数据放这里
   chart.setOption({
     xAxis: {

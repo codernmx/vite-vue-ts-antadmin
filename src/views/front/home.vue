@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div v-for="item in data.tabelData" :key="item.id" class="item d-flex" @click="details(item)">
+    <div v-for="item in data.tableData" :key="item.id" class="item d-flex" @click="details(item)">
       <div class="img mr-30">
         <el-image src="http://localhost:3000/upload/2023/20230330132196.jpg" style="width: 326px"></el-image>
       </div>
@@ -23,9 +23,9 @@
 </template>
 
 <script setup lang="ts">
-import {getArticleList} from '@/api/index'
-import {reactive, onMounted} from "vue";
-import {useRouter} from "vue-router";
+import { getArticleList } from '@/api/index'
+import { reactive, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
 const router = useRouter()
 const data = reactive({
@@ -33,20 +33,20 @@ const data = reactive({
     pageSize: 10,
     pageNum: 1,
   },
-  tabelData: [],
+  tableData: [],
   total: 0,
 })
 
-const details = ({id}) => {
+const details = ({ id }) => {
   router.push({
     path: '/front/details',
-    query: {id}
+    query: { id }
   })
 }
 const getList = async () => {
   try {
-    const res = await getArticleList({...data.page})
-    data.tabelData = res.data.rows || []
+    const res = await getArticleList({ ...data.page })
+    data.tableData = res.data.rows || []
     data.total = res.data.count
   } catch (err) {
   }
@@ -78,7 +78,8 @@ onMounted(() => {
       justify-content: space-between;
     }
 
-    h3, h5 {
+    h3,
+    h5 {
       text-align: left;
     }
 

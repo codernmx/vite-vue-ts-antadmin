@@ -2,40 +2,25 @@
   <div class="container_layout">
     <a-row type="flex" class="box">
       <a-col :span="3" class="logo">
-        <a-image
-            :preview="false"
-            :src="logo"
-            width="120px"
-            style="margin-top: -5px"
-        />
+        <a-image :preview="false" :src="logo" width="120px" style="margin-top: -5px" />
       </a-col>
       <a-col :span="18" class="flex">
-        <div
-            v-for="(item, i) in data.routers"
-            :key="i"
-            @click="openMenu(item.path)"
-            class="item"
-        >
+        <div v-for="(item, i) in data.routers" :key="i" @click="openMenu(item.path)" class="item">
           <div class="text-center" :class="data.active == item.path ? 'active' : ''">
             {{ item.title }}
           </div>
-          <img
-              src="@/assets/nav.png"
-              alt=""
-              v-if="data.active == item.path"
-              style="margin-top: -6px"
-          />
+          <img src="@/assets/nav.png" alt="" v-if="data.active == item.path" style="margin-top: -6px" />
         </div>
       </a-col>
       <a-col :span="3">
         <a-dropdown :trigger="['hover']" class="login-check" v-if="demoStore.data.userInfo.name">
           <a class="ant-dropdown-link" @click.prevent> {{ demoStore.data.userInfo.name }}
-            <DownOutlined/>
+            <DownOutlined />
           </a>
           <template #overlay>
             <a-menu @click="click">
               <a-menu-item key="1">个人中心</a-menu-item>
-              <a-menu-divider/>
+              <a-menu-divider />
               <a-menu-item key="2">退出登录</a-menu-item>
             </a-menu>
           </template>
@@ -47,42 +32,45 @@
     <a-carousel arrows :autoplay="true">
       <template #prevArrow>
         <div class="custom-slick-arrow" style="left: 10px; z-index: 1">
-          <left-circle-outlined/>
+          <left-circle-outlined />
         </div>
       </template>
       <template #nextArrow>
         <div class="custom-slick-arrow" style="right: 10px">
-          <right-circle-outlined/>
+          <right-circle-outlined />
         </div>
       </template>
       <div>
-        <el-image style="width: 100%; height: 100%" src="https://bt.nmxgzs.cn/upload/2022-05-13/fe3ce5d55aed80328a65dd75aac99065.jpeg" fit="cover"></el-image>
+        <el-image style="width: 100%; height: 100%"
+          src="https://bt.nmxgzs.cn/upload/2022-05-13/fe3ce5d55aed80328a65dd75aac99065.jpeg" fit="cover"></el-image>
       </div>
       <div>
-        <el-image style="width: 100%; height: 100%" src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg" fit="cover"></el-image>
+        <el-image style="width: 100%; height: 100%"
+          src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg" fit="cover"></el-image>
       </div>
       <div>
-        <el-image style="width: 100%; height: 100%" src="https://bt.nmxgzs.cn/upload/2022-05-13/fe3ce5d55aed80328a65dd75aac99065.jpeg" fit="cover"></el-image>
+        <el-image style="width: 100%; height: 100%"
+          src="https://bt.nmxgzs.cn/upload/2022-05-13/fe3ce5d55aed80328a65dd75aac99065.jpeg" fit="cover"></el-image>
       </div>
     </a-carousel>
 
   </div>
   <router-view v-slot="{ Component }">
     <transition name="fade">
-      <component :is="Component"/>
+      <component :is="Component" />
     </transition>
   </router-view>
 </template>
 
 <script setup lang="ts">
 import logo from '@/assets/logo.png'
-import {LeftCircleOutlined, RightCircleOutlined, DownOutlined} from '@ant-design/icons-vue';
-import {reactive} from "vue";
-import {useRouter} from 'vue-router'
-import {onMounted} from "vue";
+import { LeftCircleOutlined, RightCircleOutlined, DownOutlined } from '@ant-design/icons-vue';
+import { reactive } from "vue";
+import { useRouter } from 'vue-router'
+import { onMounted } from "vue";
 import useDemoStore from '@/store/modules/demo'
-import {storeToRefs} from 'pinia'
-import {message} from "ant-design-vue";
+import { storeToRefs } from 'pinia'
+import { message } from "ant-design-vue";
 
 const demoStore = useDemoStore()
 const router = useRouter()
@@ -98,7 +86,7 @@ const data = reactive({
   active: ''
 })
 
-const click = (val) => {
+const click = (val: any) => {
   if (val.key === '2') {
     demoStore.clearToken()
     message.success('成功')
@@ -109,7 +97,7 @@ const click = (val) => {
   }
 }
 
-const openMenu = (path) => {
+const openMenu = (path: string) => {
   router.push(path)
 }
 const login = () => {

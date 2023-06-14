@@ -8,7 +8,7 @@
       </template>
       新增
     </a-button>
-    <a-table :columns="columns" :data-source="data.tabelData" bordered :pagination="false" rowKey="id" class="top-10">
+    <a-table :columns="columns" :data-source="data.tableData" bordered :pagination="false" rowKey="id" class="top-10">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'title'">
           <div style="color:#1890ff" @click="rowClick(record)">
@@ -63,7 +63,7 @@ const columns = [
 ]
 
 const data = reactive({
-  tabelData: [],
+  tableData: [],
   page: {
     pageSize: 10,
     pageNum: 1,
@@ -97,7 +97,7 @@ const openChild = () => {
 const getList = async () => {
   try {
     const res = await getArticleList({...data.page, title: data.title})
-    data.tabelData = res.data.rows || []
+    data.tableData = res.data.rows || []
     data.total = res.data.count
   } catch (err) {
   }

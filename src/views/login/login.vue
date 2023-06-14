@@ -22,6 +22,7 @@
 </template>
 
 <script setup lang="ts">
+import useDemoStore from '@/store/modules/demo'
 import initLoginBg from "./init"
 import { onMounted, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
@@ -29,7 +30,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 
-import useDemoStore from '@/store/modules/demo'
+
 
 const demoStore = useDemoStore()
 
@@ -45,7 +46,7 @@ const form = reactive<FormState>({
 });
 const onFinish = (values: any) => {
   console.log('Success:', values);
-  demoStore.getToken(form).then(res => {
+  demoStore.getToken(form).then((res: any) => {
     if (res.data) {
       sessionStorage.setItem('userId', res.data.id)
       router.push('/')

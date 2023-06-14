@@ -1,21 +1,21 @@
 <!--
  * @Date: 2023-06-06 12:41:48
- * @LastEditTime: 2023-06-06 15:05:41
+ * @LastEditTime: 2023-06-14 16:12:40
 -->
 <template>
   <div>
-    <a-input v-model:value="data.name" placeholder="搜索一些啥" style="width:200px" allowClear/>
+    <a-input v-model:value="data.name" placeholder="搜索一些啥" style="width:200px" allowClear />
     <a-button type="primary" class="ml-10" @click="getList">搜 索</a-button>
     <a-button type="primary" class="ml-10" @click="openChild">
       <template #icon>
-        <plus-outlined/>
+        <plus-outlined />
       </template>
       新增
     </a-button>
     <a-table :columns="columns" :data-source="data.tableData" bordered :pagination="false" rowKey="id" class="top-10">
       <template #bodyCell="{ column, record, index }">
         <template v-if="column.key === 'avatar'">
-          <a-avatar :src="record.avatar"/>
+          <a-avatar :src="record.avatar" />
         </template>
         <template v-if="column.key === 'action'">
           <div style="display: flex;justify-content:space-between;">
@@ -29,8 +29,8 @@
       </template>
     </a-table>
     <div class="center top-10">
-      <a-pagination v-model:current="current" :show-total="total => `总数 ${total}`" showSizeChanger :total="data.total"
-                    @change="onChange">
+      <a-pagination v-model:current="current" :show-total="(total: any) => `总数 ${total}`" showSizeChanger
+        :total="data.total" @change="onChange">
         <template #buildOptionText="props">
           <span>{{ props.value }}条/页</span>
         </template>
@@ -38,9 +38,9 @@
     </div>
 
 
-    <a-modal v-model:visible="visible" :title="modelTitle" @ok="submit" >
+    <a-modal v-model:visible="visible" :title="modelTitle" @ok="submit">
       <div style="width: 200px;margin: 0 auto">
-        <a-image width="100%" src="https://bt.nmxgzs.cn/api/getCode" :preview="false"/>
+        <a-image width="100%" src="https://bt.nmxgzs.cn/api/getCode" :preview="false" />
         <div class="center top20">微信扫码即可自动注册用户~</div>
       </div>
     </a-modal>
@@ -54,16 +54,10 @@
 </template>
 <script setup lang="ts">
 
-import type {TreeProps} from 'ant-design-vue';
-import {message} from 'ant-design-vue'
-import {PlusOutlined} from '@ant-design/icons-vue'
-import {onMounted, ref, reactive} from 'vue'
-import {getUserList, deleteUser, updateUser, insertUser, getRoleListAll, updateUserRole,getRoleIdByUserId} from '@/api/index'
-import useDemoStore from '@/store/modules/demo'
-
-import {useRouter} from 'vue-router'
-
-const router = useRouter()
+import { message } from 'ant-design-vue'
+import { PlusOutlined } from '@ant-design/icons-vue'
+import { onMounted, ref, reactive } from 'vue'
+import { getUserList, deleteUser, updateUser, insertUser, getRoleListAll, updateUserRole, getRoleIdByUserId } from '@/api/index'
 
 
 const visible = ref<boolean>(false)
@@ -74,27 +68,60 @@ const modelTitle = ref<string>('新增')
 
 const checkedKeys = ref<string[]>([]);
 
+interface Column {
+  title: string;
+  align?: string;
+  width?: number;
+  customRender?: (data: { index: number }) => string;
+  dataIndex?: string;
+  key?: string;
+}
 
-const columns = [
+interface Data {
+  tableData: any[];
+  page: {
+    pageSize: number;
+    pageNum: number;
+  };
+  row: any;
+  treeData: any[];
+  form: {
+    name?: string,
+    remarks?: string
+  };
+  total: number;
+  title: string;
+  roleAll: any[];
+  name: string
+}
+interface DeleteParams {
+  id: string;
+}
+interface updateUserParams {
+  id: string
+  status: number
+}
+
+const columns: Column[] = [
   {
     title: '序号',
     align: "center",
     width: 80,
-    customRender: ({index}) => {
+    customRender: ({ index }) => {
       return `${index + 1}`;
     }
   },
-  {title: '头像', dataIndex: 'avatar', key: 'avatar'},
-  {title: '用户名', dataIndex: 'name'},
-  {title: 'openId', dataIndex: 'openId'},
-  {title: '邮箱', dataIndex: 'email'},
-  {title: '累计登录次数', dataIndex: 'loginNum'},
-  {title: '最近操作时间', dataIndex: 'updateTime'},
-  {title: '创建时间', dataIndex: 'createTime'},
-  {title: '操作', key: 'action', width: 160, align: 'center'},
+  { title: '头像', dataIndex: 'avatar', key: 'avatar' },
+  { title: '用户名', dataIndex: 'name' },
+  { title: 'openId', dataIndex: 'openId' },
+  { title: '邮箱', dataIndex: 'email' },
+  { title: '累计登录次数', dataIndex: 'loginNum' },
+  { title: '最近操作时间', dataIndex: 'updateTime' },
+  { title: '创建时间', dataIndex: 'createTime' },
+  { title: '操作', key: 'action', width: 160, align: 'center' },
 ]
 
-const data = reactive({
+const data: Data = reactive({
   tableData: [],
   page: {
     pageSize: 10,
@@ -105,7 +132,8 @@ const data = reactive({
   form: {},
   total: 0,
   title: '',
-  roleAll: []//所有角色
+  roleAll: [],//所有角色
+  name: ''
 })
 
 
@@ -122,12 +150,6 @@ const openChild = () => {
   modelTitle.value = '新增'
   visible.value = true
 }
-
-const check = (check, e) => {
-  console.log(check, e);
-  console.log(checkedKeys.value, 'checkedKeys');
-}
-
 
 const updateUserRoleOk = async () => {
   updateUserRole({
@@ -159,7 +181,7 @@ const submit = async () => {
 
 const getList = async () => {
   try {
-    const res = await getUserList({...data.page, name: data.name})
+    const res = await getUserList({ ...data.page, name: data.name })
     data.tableData = res.data.rows || []
     data.total = res.data.count
   } catch (err) {
@@ -172,35 +194,33 @@ const getRoleAll = async () => {
   } catch (err) {
   }
 }
-const del = async ({id}) => {
-  const res = await deleteUser({id})
+
+const del = async ({ id }: DeleteParams) => {
+  const res = await deleteUser({ id })
   message.success('成功')
   getList()
 }
 
-const editRole = async (record) => {
+const editRole = async (record: any) => {
   authVisible.value = true
   data.row = record
   checkedKeys.value = record.menuId
-  const res  = await getRoleIdByUserId({userId:record.id})
+  const res = await getRoleIdByUserId({ userId: record.id })
   value.value = res.data ? res.data.roleId : ''
   // data.form = Object.assign({}, { id, title, content: inputValue })
   // modelTitle.value = '编辑'
 }
 
-const updateUserStatus = (row)=>{
-  update({id:row.id,status:row.status == 0 ? 1 : 0})
+const updateUserStatus = (row: any) => {
+  update({ id: row.id, status: row.status == 0 ? 1 : 0 })
 }
 
-const update = async (params) => {
+const update = async (params: updateUserParams) => {
   const res = await updateUser(params)
   message.success('成功')
   getList()
 }
 
-const close = () => {
-  visible.value = false
-}
 onMounted(() => {
   getList()
   getRoleAll()

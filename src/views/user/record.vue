@@ -1,6 +1,6 @@
 <!--
  * @Date: 2023-06-06 12:41:48
- * @LastEditTime: 2023-06-06 13:46:13
+ * @LastEditTime: 2023-06-14 16:13:43
 -->
 <template>
     <div>
@@ -20,7 +20,7 @@
                 <template v-if="column.key === 'http_user_agent'">
                     <a-tooltip>
                         <template #title>{{ record.http_user_agent }}</template>
-                        <span v-if="record.http_user_agent">{{ record.http_user_agent.slice(0,50) }}...</span>
+                        <span v-if="record.http_user_agent">{{ record.http_user_agent.slice(0, 50) }}...</span>
                     </a-tooltip>
                 </template>
                 <template v-if="column.key === 'action'">
@@ -36,8 +36,8 @@
 
 
         <div class="center top-10">
-            <a-pagination v-model:current="current" :show-total="total => `总数 ${total}`" showSizeChanger :total="data.total"
-                @change="onChange">
+            <a-pagination v-model:current="current" :show-total="(total: any) => `总数 ${total}`" showSizeChanger
+                :total="data.total" @change="onChange">
                 <template #buildOptionText="props">
                     <span>{{ props.value }}条/页</span>
                 </template>
@@ -73,29 +73,52 @@ import type { TreeProps } from 'ant-design-vue';
 import { message } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import { onMounted, ref, reactive } from 'vue'
-import { getLogList, deleteLog, updateLog, insertLog } from '@/api/index'
+import { getLogList, deleteLog } from '@/api/index'
 import useDemoStore from '@/store/modules/demo'
 
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const headers = {
-    token: useDemoStore().data.token
-}
+
 const visible = ref<boolean>(false)
 const authVisible = ref<boolean>(false)
 const current = ref<number>(1)
-const value = ref<string>('')
 const modelTitle = ref<string>('新增')
 
 
 const selectedKeys = ref<string[]>([]);
 const checkedKeys = ref<string[]>([]);
 
+interface DeleteParams {
+    id: string;
+}
+interface Column {
+    title: string;
+    align?: string;
+    width?: number;
+    customRender?: (data: { index: number }) => string;
+    dataIndex?: string;
+    key?: string;
+}
 
+interface Data {
+    tableData: any[];
+    page: {
+        pageSize: number,
+        pageNum: number,
+    };
+    row: any;
+    treeData: any[];
+    form: {
+        name?: string
+        remarks?: string
+    };
+    total: number;
+    action: string;
+}
 
-const columns = [
+const columns: Column[] = [
     {
         title: '序号',
         align: "center",
@@ -112,7 +135,7 @@ const columns = [
     { title: '操作', key: 'action', width: 160, align: 'center' },
 ]
 
-const data = reactive({
+const data: Data = reactive({
     tableData: [],
     page: {
         pageSize: 10,
@@ -133,7 +156,6 @@ const fieldNames: TreeProps['fieldNames'] = {
 };
 
 const onChange = (pageNumber: number, pageSize: number) => {
-    console.log('Page: ', pageNumber)
     data.page.pageNum = pageNumber
     data.page.pageSize = pageSize
     getList()
@@ -146,7 +168,7 @@ const openChild = () => {
     visible.value = true
 }
 
-const check = (check, e) => {
+const check = (check: any, e: any) => {
     console.log(check, e);
     console.log(checkedKeys.value, 'checkedKeys');
 }
@@ -171,7 +193,6 @@ const submit = async () => {
         return false
     }
     if (modelTitle.value == '新增') {
-        const res = await insertLog(data.form)
         message.success('成功')
         getList()
     } else {
@@ -188,29 +209,14 @@ const getList = async () => {
     } catch (err) {
     }
 }
-const del = async ({ id }) => {
+const del = async ({ id }: DeleteParams) => {
     const res = await deleteLog({ id })
     message.success('成功')
     getList()
 }
 
-const editRole = (record) => {
-    authVisible.value = true
-    data.row = record
-    checkedKeys.value = record.menuId
-    // data.form = Object.assign({}, { id, title, content: inputValue })
-    // modelTitle.value = '编辑'
-}
 
-const update = async (params) => {
-    const res = await updateLog(params)
-    message.success('成功')
-    getList()
-}
 
-const close = () => {
-    visible.value = false
-}
 onMounted(() => {
     getList()
 })

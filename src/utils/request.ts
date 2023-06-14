@@ -1,13 +1,17 @@
+/*
+ * @Date: 2023-05-12 11:45:13
+ * @LastEditTime: 2023-06-14 15:08:48
+ */
 import axios from 'axios'
-import {message} from 'ant-design-vue';
-import {ElLoading} from 'element-plus'
+import { message } from 'ant-design-vue';
+import { ElLoading } from 'element-plus'
 import useDemoStore from '@/store/modules/demo'
 import router from '@/router/index'
 
 
 const baseURL = 'http://localhost:3000/'
 
-let loading = null //这里是loading
+let loading: any = null //这里是loading
 const request = axios.create({//使用create方法创建axios实例
     timeout: 30000, // 请求超时时间
     baseURL,
