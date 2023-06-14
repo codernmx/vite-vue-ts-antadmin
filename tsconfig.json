@@ -23,7 +23,8 @@
       "dom",
       "dom.iterable",
       "scripthost"
-    ]
+    ],
+    "noEmit": true//就是这个没有设置导致的
   },
   "include": [
     "src/**/*.ts",
