@@ -57,11 +57,11 @@ const router = createRouter({
 });
 
 
-function change(temp, isChildren = false) {
-    let finalArr = []
+function change(temp: any, isChildren = false) {
+    let finalArr: any[] = []
     if (isChildren) {
-        let modules = import.meta.glob(`../views/**/*.vue`)
-        temp.forEach(item => {
+        let modules = import.meta.glob(`../views/**/*.vue`)  //获取view 下所有组件
+        temp.forEach((item: any) => {
             item = {
                 name: item.name,
                 path: item.path,
@@ -71,7 +71,7 @@ function change(temp, isChildren = false) {
             finalArr.push(item)
         })
     } else { //这里是一级菜单
-        temp.forEach(item => {
+        temp.forEach((item: any) => {
             if (item.children && item.children.length > 0) {
                 item.children = change(item.children, true)
             }
@@ -104,7 +104,8 @@ router.beforeEach((to, from, next) => {
             if (demoStore.data.menuList.length > 0) {
                 next()
             } else {
-                demoStore.getMenu(sessionStorage.getItem('userId')).then(res => {
+                const userId: string | null = sessionStorage.getItem('userId') as string;
+                demoStore.getMenu(userId).then((res: any) => {
                     const list = change(JSON.parse(JSON.stringify(res.data)))
                     list.forEach(item => {
                         router.addRoute(item)
