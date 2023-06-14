@@ -270,3 +270,23 @@ export function deleteLog(data: IDelData) {
 
 
 /* 日志相关        end */
+
+
+
+
+export function getUserChildrenList(params: LogList) {
+    return request({
+        url: `/api/user/list/have/children`,
+        method: 'GET',
+        params
+    })
+}
+
+//获取收集项目列表
+export function getGatherList(params) {
+    return request({
+        url: `/api/applet/gather/list`,
+        method: 'GET',
+        params
+    })
+}

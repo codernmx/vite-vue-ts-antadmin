@@ -80,5 +80,42 @@ router.post('/delete/user', async (req, response, next) => {
     }
 });
 
+// 获取邀请了用户的列表（没做分页）
+router.get('/user/list/have/children', async (req, response, next) => {
+    const pageNum  = Number(req.query.pageNum)
+    const pageSize  = Number(req.query.pageSize)
+    try {
+        // const sql = `SELECT * FROM user WHERE parentOpenId IS NOT NULL GROUP BY parentOpenId ORDER BY createTime DESC`
+        const res = await User.findAndCountAll({
+            where: {
+                parentOpenId: {
+                    [Op.not]: null
+                }, //bug
+            },
+            order: [['createTime', 'desc']],
+            group: 'parentOpenId',
+            limit: pageSize || 10,
+            offset: ((pageNum || 1) - 1) * (pageSize || 10),
+            raw: true,
+        });
+        const allUser = await User.findAll({ raw: true });
+        let data = []
+        /* 先通过 父级id分组 拿到它自己 */
+        res.rows.forEach(item => {
+            if (allUser.filter(v => v.openId == item.parentOpenId)) {
+                data.push(allUser.filter(v => v.openId == item.parentOpenId)[0])
+            }
+        });
+        data.forEach(item => {
+            item.children = allUser.filter(v => v.parentOpenId == item.openId)
+        });
+        response.send(success({
+            count: res.count.length, rows: data
+        }))
+    } catch (error) {
+        response.send(fail(error))
+    }
+});
+
 
 module.exports = router;

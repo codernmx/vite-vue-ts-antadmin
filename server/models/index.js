@@ -8,10 +8,13 @@ const Menu = require('./menu')(coon, Sequelize)
 const File = require('./file')(coon, Sequelize)
 const Role = require('./role')(coon, Sequelize)
 const Log = require('./log')(coon, Sequelize)
+const Gather = require('./gather')(coon, Sequelize)
+const Student = require('./student')(coon, Sequelize)
+const StudentFile = require('./student_file')(coon, Sequelize)
 const RoleMenu = require('./role_menu')(coon, Sequelize)
 const UserRole = require('./user_role')(coon, Sequelize)
 
 module.exports = {
     User, Article, Menu, File, Role, RoleMenu,
-    UserRole, Log
+    UserRole, Log, Gather, Student,  StudentFile
 };

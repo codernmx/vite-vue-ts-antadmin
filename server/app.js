@@ -9,6 +9,7 @@ var logger = require('morgan');
 
 var Index = require('./routes/index');
 var User = require('./routes/user');
+var Gather = require('./routes/gather');
 var Log = require('./routes/log');
 var Upload = require('./routes/upload');
 var jwt = require('./utils/jwt')
@@ -54,6 +55,7 @@ app.use(function (req, res, next) {
 app.use('/api', Index);
 app.use('/api', User);
 app.use('/api', Log);
+app.use('/api/applet', Gather);
 app.use('/api/upload', Upload);
 
 const mysql_test = require('./utils/sequelize')
