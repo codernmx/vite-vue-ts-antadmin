@@ -1,6 +1,6 @@
 /*
  * @Date: 2023-05-12 11:45:13
- * @LastEditTime: 2023-06-15 12:36:32
+ * @LastEditTime: 2023-06-15 14:15:47
  */
 import axios from 'axios'
 import { message } from 'ant-design-vue';
@@ -9,12 +9,12 @@ import useDemoStore from '@/store/modules/demo'
 import router from '@/router/index'
 
 
-// const baseURL = 'http://localhost:3000/'
+const baseURL = 'http://localhost:3000/'
 
 let loading: any = null //这里是loading
 const request = axios.create({//使用create方法创建axios实例
     timeout: 30000, // 请求超时时间
-    // baseURL,
+    baseURL,
     // method: 'POST',
     // headers: {
     //     'Content-Type': 'application/json;charset=UTF-8',

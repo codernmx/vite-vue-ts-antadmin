@@ -1,12 +1,12 @@
 /*
  * @Date: 2023-06-06 13:05:56
- * @LastEditTime: 2023-06-06 13:08:08
+ * @LastEditTime: 2023-06-15 14:02:16
  */
 var express = require('express');
 var router = express.Router();
-const {success, fail, uuid} = require('../utils/index');
-const {literal, Op, Sequelize} = require("sequelize");
-const {  Gather, Student,  StudentFile } = require('../models/index')
+const { success, fail, uuid } = require('../utils/index');
+const { literal, Op, Sequelize } = require("sequelize");
+const { Gather, Student, StudentFile } = require('../models/index')
 
 
 // 关联模型
@@ -30,9 +30,9 @@ router.get('/student/list', async (req, response, next) => {
 
 /* 项目列表 */
 router.get('/gather/list', async (req, response, next) => {
-    const { all  } = req.query
-    const pageNum  = Number(req.query.pageNum)
-    const pageSize  = Number(req.query.pageSize)
+    const { all } = req.query
+    const pageNum = Number(req.query.pageNum)
+    const pageSize = Number(req.query.pageSize)
     let res = null
     try {
         res = await Gather.findAll({
