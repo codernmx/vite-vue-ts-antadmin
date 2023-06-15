@@ -131,8 +131,11 @@ const openChild = () => {
 }
 const copy = (record) => {
   const url = fileUrl + record.path
-  navigator && navigator.clipboard && navigator.clipboard.writeText(url).then(res => {
+  navigator.clipboard.writeText(url).then(res => {
     message.success(`复制成功 ${url}`)
+  }).catch(err => {
+    console.log(err);
+    message.error(err.toString())
   })
 }
 

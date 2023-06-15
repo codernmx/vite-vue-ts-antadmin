@@ -1,6 +1,6 @@
 /*
  * @Date: 2023-05-12 11:45:13
- * @LastEditTime: 2023-06-15 23:02:11
+ * @LastEditTime: 2023-06-16 00:05:23
  */
 var express = require('express');
 var path = require('path');
@@ -37,14 +37,21 @@ app.all('*', function (req, res, next) {
 
 /* 所有请求都过token校验 */
 app.use(function (req, res, next) {
-	let passUrl = ['/api/login']
-	if (!passUrl.includes(req.url) && (req.url.indexOf('upload') == -1)) {
+	let passUrl = [
+		'/api/login',
+		'/api/applet/student/list',
+		'/api/applet/gather/list',
+		'/api/upload/gather/file',
+		'/api/applet/already/upload/list'
+	]
+	if (!passUrl.includes(req.path)) { //nginx 前缀 /api
 		let token = req.headers.token;
 		let result = jwt.verifyToken(token);
 		if (result.code == 500) {
 			res.send({
 				code: 403,
-				msg: '登录已过期,请重新登录'
+				msg: '登录已过期,请重新登录',
+				timestamp: new Date().getTime()
 			});
 		} else {
 			next();
@@ -72,7 +79,9 @@ mysql_test.authenticate()  //用来测试数据库是否连接成功
 app.use(function (req, res, next) {
 	res.send({
 		msg: '接口未定义',
-		code: 404
+		code: 404,
+		path: req.path,
+		timestamp: new Date().getTime()
 	})
 });
 
