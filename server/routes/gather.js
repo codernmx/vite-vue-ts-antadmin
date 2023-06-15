@@ -1,13 +1,15 @@
 /*
  * @Date: 2023-06-06 13:05:56
- * @LastEditTime: 2023-06-15 14:02:16
+ * @LastEditTime: 2023-06-15 23:23:30
  */
 var express = require('express');
 var router = express.Router();
 const { success, fail, uuid } = require('../utils/index');
 const { literal, Op, Sequelize } = require("sequelize");
 const { Gather, Student, StudentFile } = require('../models/index')
-
+const compressing = require('compressing');
+var fs = require('fs'); //文件
+const { fileUrl } = require('../config/index')
 
 // 关联模型
 Student.hasMany(StudentFile, { foreignKey: 'studentId' });
@@ -114,21 +116,17 @@ router.post('/gather/update', async (req, response, next) => {
 
 
 /* 压缩文件夹 */
-router.get('/compressing/file', async (req, response, next) => {
-    const { folderName } = req.query
-    loggerProxy.info(req.query)
+router.post('/compressing/file', async (req, response, next) => {
+    const { folderName } = req.body
     const filePath = `./upload/university/${folderName}`
     compressing.zip.compressDir(filePath, `./upload/university/${folderName}.zip`)
         .then((res) => {
-            /* 直接返回下载路径---我觉得ojbk */
-            /* 基本路径前端config接口获取 */
-            response.send(success(`university/${folderName}.zip`))
+            response.send(success(`${fileUrl}/university/${folderName}.zip`))
         })
         .catch((error) => {
             /* 失败会生成一个破损文件删掉~ */
             fs.unlink(`./upload/university/${folderName}.zip`, function (err) {
                 if (err) {
-                    loggerProxy.info(err);
                     return false;
                 }
                 response.send(fail(error))

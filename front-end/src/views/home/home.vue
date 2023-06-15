@@ -1,65 +1,82 @@
 <template>
   <div class="echarts-box">
-    <div id="myEcharts" :style="{ width: '100%', height: '400px' }"></div>
+    <div id="myEcharts" :style="{ width: '100%', height: '700px' }"></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import * as echarts from "echarts";
-import {onMounted} from "vue";
+import { onMounted } from "vue";
+import { getUserTotal } from '@/api/index'
 
 onMounted(() => {
-  initChart();
+  // initChart();
+  getData()
 });
 
+const getData = async () => {
+  const res = await getUserTotal()
+  const data = res.data
+  // rer.data.reduce(function (prev, cur, index, arr) {
+  //   return prev + cur.total;
+  // }, 0);
+  const xData = [], yData = []
+  for (let i = 30; i > 0; i--) {
+    xData.push(data[data.length - i].day)
+    yData.push(data[data.length - i].total)
+  }
+  initChart(xData, yData);
+}
+
 // 基础配置一下Echarts
-function initChart() {
+function initChart(xData, yData) {
   let chart = echarts.init(document.getElementById("myEcharts") as HTMLElement, "dark");
   // 把配置和数据放这里
   chart.setOption({
-    xAxis: {
-      type: "category",
-      data: [
-        "一月",
-        "二月",
-        "三月",
-        "四月",
-        "五月",
-        "六月",
-        "七月",
-        "八月",
-        "九月",
-        "十月",
-        "十一月",
-        "十二月"
-      ]
+    title: {
+      text: "近30天单日用户注册数变化趋势",
+      top: "0",
+    },
+    legend: {
+      top: "20",
+      data: ["当日用户注册数"],
     },
     tooltip: {
-      trigger: "axis"
-    },
-    yAxis: {
-      type: "value"
-    },
-    series: [
-      {
-        data: [
-          820,
-          932,
-          901,
-          934,
-          1290,
-          1330,
-          1320,
-          801,
-          102,
-          230,
-          4321,
-          4129
-        ],
-        type: "line",
-        smooth: true
+      trigger: 'axis',
+      axisPointer: { // 坐标轴指示器，坐标轴触发有效
+        type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
       }
-    ]
+    },
+    grid: {
+      top: "15%",
+      left: "1%",
+      right: "2%",
+      bottom: "1%",
+      containLabel: true,
+    },
+    xAxis: [{
+      type: 'category',
+      data: xData,
+      axisTick: {
+        alignWithLabel: true
+      }
+    }],
+    yAxis: [{
+      type: 'value',
+      axisTick: {
+        show: false
+      }
+    }],
+    series: [{
+      name: '当日用户注册数',
+      type: 'line',
+      stack: 'vistors',
+      label: {
+        show: true,
+      },
+      data: yData,
+      animationDuration:600
+    }]
   });
   window.onresize = function () {
     chart.resize();//自适应大小
@@ -68,6 +85,4 @@ function initChart() {
 
 </script>
 
-<style scoped lang="less">
-
-</style>
+<style scoped lang="less"></style>

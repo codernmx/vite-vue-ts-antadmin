@@ -1,6 +1,6 @@
 <!--
  * @Date: 2023-05-12 11:45:13
- * @LastEditTime: 2023-05-12 15:13:40
+ * @LastEditTime: 2023-06-15 23:19:02
 -->
 <template>
   <div class="container">
@@ -41,8 +41,8 @@ interface FormState {
 }
 
 const form = reactive<FormState>({
-  name: 'Maisy',
-  password: 'admin',
+  name: '',
+  password: '',
 });
 const onFinish = (values: any) => {
   console.log('Success:', values);

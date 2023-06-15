@@ -3,48 +3,31 @@ var router = express.Router();
 var md5 = require('md5-node');
 var jwt = require('../utils/jwt')
 
-const {success, fail, uuid} = require('../utils/index');
-const {literal, Op, Sequelize, where} = require("sequelize");
-const {User, Article, Menu, File, Role, RoleMenu, UserRole} = require('../models/index')
+const { success, fail, uuid } = require('../utils/index');
+const { literal, Op, Sequelize, where } = require("sequelize");
+const { User, Article, Menu, File, Role, RoleMenu, UserRole, CmsLogin } = require('../models/index')
 
 
 // // belongsTo 谁属于一个谁 / 一本书属于一个人
-Article.belongsTo(User, {foreignKey: 'userId', sourceKey: 'id'});
+Article.belongsTo(User, { foreignKey: 'userId', sourceKey: 'id' });
 // hasOne 谁拥有一个谁 / 一个人拥有一本书
 // User.hasOne(Article, {foreignKey: 'userId',sourceKey: 'id'});
 
 /* 登录 */
 router.post('/login', async (req, response, next) => {
-    const {name, password} = req.body
+    const { name, password } = req.body
+    console.log(md5(password));
     try {
-        const data = await User.findOne({where: {name}});
+        const data = await CmsLogin.findOne({ where: { name, password: md5(password) } });
         if (data) {
-            //暂时不做邮件登录
-            // 所有数据库存在的都成功
-            const token = jwt.createToken({name});
-            const userInfo = await User.findOne({raw: true, where: {name}});
+            const token = jwt.createToken({ name });
+            const userInfo = await User.findOne({ raw: true, where: { id: data.userId } });
             response.send(success({
                 ...userInfo,
                 token
             }))
-
-            return false
-
-            const login = await User.findOne({
-                attributes: ['id', 'name', 'nickName'],
-                where: {name, password: md5(password)}
-            });
-            if (login) {
-                const token = jwt.createToken({name});
-                response.send(success({
-                    ...login.get(),
-                    token
-                }))
-            } else {
-                response.send(fail('账号或者密码错误'))
-            }
         } else {
-            response.send(fail('账号未注册'))
+            response.send(fail('账号未注册,或者账号密码错误'))
         }
 
     } catch (error) {
@@ -55,15 +38,15 @@ router.post('/login', async (req, response, next) => {
 
 /* 获取菜单列表 */
 router.post('/menu/list', async (req, response, next) => {
-    const {id} = req.body   //用户id  如果有id需要根据 角色返回菜单
+    const { id } = req.body   //用户id  如果有id需要根据 角色返回菜单
     try {
-        let allMenu = await Menu.findAll({raw: true});
+        let allMenu = await Menu.findAll({ raw: true });
         let oneLev = await Menu.findAll({
-            where: {parId: null},
+            where: { parId: null },
             raw: true
         });
         if (id) {
-            const data = await UserRole.findOne({raw: true, where: {userId: id}}); //这里后期需要取最优角色 或者可以多选 //目前仅做单选
+            const data = await UserRole.findOne({ raw: true, where: { userId: id } }); //这里后期需要取最优角色 或者可以多选 //目前仅做单选
             // console.log(data.roleId);
             // 根据角色id查询 菜单
             if (!data) {
@@ -116,9 +99,9 @@ router.post('/menu/list', async (req, response, next) => {
 
 /* 删除菜单 */
 router.post('/del/menu', async (req, response, next) => {
-    const {id} = req.body
+    const { id } = req.body
     try {
-        const data = await Menu.destroy({where: {id}});
+        const data = await Menu.destroy({ where: { id } });
         response.send(success(data))
     } catch (error) {
         response.send(fail(error))
@@ -127,12 +110,12 @@ router.post('/del/menu', async (req, response, next) => {
 
 /* 添加菜单 */
 router.post('/insert/menu', async (req, response, next) => {
-    const {parId, icon, name, title, sort, path} = req.body
+    const { parId, icon, name, title, sort, path } = req.body
     try {
         if (parId) {
-            await Menu.create({id: uuid(), parId, icon, name, title, sort, path})
+            await Menu.create({ id: uuid(), parId, icon, name, title, sort, path })
         } else {
-            await Menu.create({id: uuid(), icon, name, title, sort, path})
+            await Menu.create({ id: uuid(), icon, name, title, sort, path })
         }
         response.send(success())
     } catch (error) {
@@ -141,9 +124,9 @@ router.post('/insert/menu', async (req, response, next) => {
 });
 /* 更新菜单 */
 router.post('/update/menu', async (req, response, next) => {
-    const {id, icon, name, title, sort, path} = req.body
+    const { id, icon, name, title, sort, path } = req.body
     try {
-        const data = await Menu.update({icon, name, title, sort, path}, {where: {id}});
+        const data = await Menu.update({ icon, name, title, sort, path }, { where: { id } });
         response.send(success(data))
     } catch (error) {
         response.send(fail(error))
@@ -153,7 +136,7 @@ router.post('/update/menu', async (req, response, next) => {
 
 /* 获取文章列表 */
 router.post('/article/list', async (req, response, next) => {
-    const {title, pageSize, pageNum} = req.body
+    const { title, pageSize, pageNum } = req.body
     try {
         let data = await Article.findAndCountAll({
             where: {
@@ -165,7 +148,7 @@ router.post('/article/list', async (req, response, next) => {
             order: [['createTime', 'desc']],
             limit: pageSize || 10,
             offset: ((pageNum || 1) - 1) * (pageSize || 10),
-            include: [{model: User}]
+            include: [{ model: User }]
         });
         response.send(success(data))
     } catch (error) {
@@ -176,15 +159,15 @@ router.post('/article/list', async (req, response, next) => {
 
 /* 获取文章详情 */
 router.post('/article/details', async (req, response, next) => {
-    const {id} = req.body
+    const { id } = req.body
     try {
         await Article.update({
             views: literal("views + 1"),
             // readCount  : literal("read_count + 1"),  // 这里有个坑注意大小写
-        }, {where: {id}});
+        }, { where: { id } });
         const data = await Article.findOne({
-            include: [{model: User}],
-            where: {id}
+            include: [{ model: User }],
+            where: { id }
         });
         response.send(success(data))
     } catch (error) {
@@ -193,9 +176,9 @@ router.post('/article/details', async (req, response, next) => {
 });
 /* 添加文章 */
 router.post('/insert/article', async (req, response, next) => {
-    const {title, content, userId, inputValue} = req.body
+    const { title, content, userId, inputValue } = req.body
     try {
-        const res = await Article.create({id: uuid(), title, content, userId, inputValue})
+        const res = await Article.create({ id: uuid(), title, content, userId, inputValue })
         response.send(success(res))
     } catch (error) {
         response.send(fail(error))
@@ -204,9 +187,9 @@ router.post('/insert/article', async (req, response, next) => {
 
 /* 编辑文章 */
 router.post('/update/article', async (req, response, next) => {
-    const {id, title, content, inputValue} = req.body
+    const { id, title, content, inputValue } = req.body
     try {
-        const data = await Article.update({title, content, inputValue}, {where: {id}});
+        const data = await Article.update({ title, content, inputValue }, { where: { id } });
         response.send(success(data))
     } catch (error) {
         response.send(fail(error))
@@ -215,9 +198,9 @@ router.post('/update/article', async (req, response, next) => {
 
 /* 删除文章 */
 router.post('/delete/article', async (req, response, next) => {
-    const {id} = req.body
+    const { id } = req.body
     try {
-        const data = await Article.update({deleteTime: Sequelize.fn('NOW')}, {where: {id}});
+        const data = await Article.update({ deleteTime: Sequelize.fn('NOW') }, { where: { id } });
         response.send(success(data))
     } catch (error) {
         response.send(fail(error))
@@ -229,7 +212,7 @@ router.post('/delete/article', async (req, response, next) => {
 /* 获取列表 */
 
 router.post('/file/list', async (req, response, next) => {
-    const {title, pageSize, pageNum} = req.body
+    const { title, pageSize, pageNum } = req.body
     try {
         let data = await File.findAndCountAll({
             where: {
@@ -250,9 +233,9 @@ router.post('/file/list', async (req, response, next) => {
 
 /* 删除 */
 router.post('/del/file', async (req, response, next) => {
-    const {id} = req.body
+    const { id } = req.body
     try {
-        const data = await File.destroy({where: {id}});
+        const data = await File.destroy({ where: { id } });
         response.send(success(data))
     } catch (error) {
         response.send(fail(error))
@@ -262,9 +245,9 @@ router.post('/del/file', async (req, response, next) => {
 
 /* 更新菜单 */
 router.post('/update/file', async (req, response, next) => {
-    const {id, icon, name, title, sort, path} = req.body
+    const { id, icon, name, title, sort, path } = req.body
     try {
-        const data = await File.update({icon, name, title, sort, path}, {where: {id}});
+        const data = await File.update({ icon, name, title, sort, path }, { where: { id } });
         response.send(success(data))
     } catch (error) {
         response.send(fail(error))
@@ -279,7 +262,7 @@ router.post('/update/file', async (req, response, next) => {
 
 // 角色列表
 router.post('/role/list', async (req, response, next) => {
-    const {name, pageSize, pageNum} = req.body
+    const { name, pageSize, pageNum } = req.body
     try {
         let allMenu = await RoleMenu.findAll({
             // attributes: ['menuId'],
@@ -327,10 +310,10 @@ router.post('/role/list/all', async (req, response, next) => {
 
 //修改用户角色
 router.post('/update/user/role', async (req, response, next) => {
-    const {userId, roleId} = req.body
+    const { userId, roleId } = req.body
     try {
-        await UserRole.destroy({where: {userId}});
-        await UserRole.create({id: uuid(), userId, roleId});
+        await UserRole.destroy({ where: { userId } });
+        await UserRole.create({ id: uuid(), userId, roleId });
         response.send(success('修改成功~'))
     } catch (error) {
         response.send(fail(error))
@@ -339,9 +322,9 @@ router.post('/update/user/role', async (req, response, next) => {
 
 // 用户id查询角色
 router.post('/getRoleIdByUserId', async (req, response, next) => {
-    const {userId} = req.body
+    const { userId } = req.body
     try {
-        const res = await UserRole.findOne({where: {userId}, raw: true});
+        const res = await UserRole.findOne({ where: { userId }, raw: true });
         response.send(success(res))
     } catch (error) {
         response.send(fail(error))
@@ -350,9 +333,9 @@ router.post('/getRoleIdByUserId', async (req, response, next) => {
 
 /* 删除角色 */
 router.post('/del/role', async (req, response, next) => {
-    const {id} = req.body
+    const { id } = req.body
     try {
-        const data = await Role.destroy({where: {id}});
+        const data = await Role.destroy({ where: { id } });
         response.send(success(data))
     } catch (error) {
         response.send(fail(error))
@@ -361,9 +344,9 @@ router.post('/del/role', async (req, response, next) => {
 
 // 新增角色
 router.post('/insert/role', async (req, response, next) => {
-    const {name, remarks} = req.body
+    const { name, remarks } = req.body
     try {
-        const res = await Role.create({id: uuid(), name, remarks})
+        const res = await Role.create({ id: uuid(), name, remarks })
         response.send(success(res))
     } catch (error) {
         response.send(fail(error))
@@ -373,9 +356,9 @@ router.post('/insert/role', async (req, response, next) => {
 //修改角色
 
 router.post('/update/role', async (req, response, next) => {
-    const {name, remarks, id} = req.body
+    const { name, remarks, id } = req.body
     try {
-        const res = await Role.update({name, remarks}, {where: {id}})
+        const res = await Role.update({ name, remarks }, { where: { id } })
         response.send(success('更新数据成功~'))
     } catch (error) {
         response.send(fail(error))
@@ -385,12 +368,12 @@ router.post('/update/role', async (req, response, next) => {
 
 // 修改角色权限
 router.post('/insert/role/menu', async (req, response, next) => {
-    const {menuList, roleId} = req.body
+    const { menuList, roleId } = req.body
     try {
         menuList.forEach(item => {
             item.id = uuid()
         });
-        const del = await RoleMenu.destroy({where: {roleId}});
+        const del = await RoleMenu.destroy({ where: { roleId } });
         const res = await RoleMenu.bulkCreate(menuList)
         response.send(success(res))
     } catch (error) {

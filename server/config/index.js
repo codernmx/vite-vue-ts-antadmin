@@ -1,4 +1,9 @@
-const fileUrl = 'http://localhost:3000/'  //文件访问路径
+/*
+ * @Date: 2023-06-09 09:50:08
+ * @LastEditTime: 2023-06-15 23:22:52
+ */
+// const fileUrl = 'http://localhost:3000/'  //文件访问路径 --本地
+const fileUrl = 'http://49.232.153.152:9090'  //文件访问路径 --线上
 
 const dbConfig = {
     database: 'bjcx',

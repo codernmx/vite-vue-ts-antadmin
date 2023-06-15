@@ -12,7 +12,7 @@
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'action'">
           <div style="display: flex;justify-content:space-between;">
-            <a @click="setAuth(record)">下载</a>
+            <a @click="downLoad(record)">下载</a>
             <!--<a @click="editRole(record)">编辑</a>-->
             <a-popconfirm title="是否确认删除？" ok-text="确定" cancel-text="取消" @confirm="del(record)">
               <a @click.top="" v-if="!record.deleteTime">设置不展示</a>
@@ -39,17 +39,6 @@
     </a-modal>
 
 
-    <a-modal v-model:visible="authVisible" title="权限" @ok="authSubmit">
-      <a-tree v-model:selectedKeys="selectedKeys" v-model:checkedKeys="checkedKeys" default-expand-all checkable
-        :height="233" :tree-data="data.treeData" @check="check" :field-names="fieldNames">
-        <template #title="{ title, key }">
-          <span v-if="key === '0-0-1-0'" style="color: #1890ff">{{ title }}</span>
-          <template v-else>{{ title }}</template>
-        </template>
-      </a-tree>
-
-    </a-modal>
-
 
   </div>
 </template>
@@ -59,7 +48,7 @@ import type { TreeProps } from 'ant-design-vue';
 import { message } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import { onMounted, ref, reactive } from 'vue'
-import { getGatherList, delGather, updateArticle, insertGather, updateRole, getMenuList, insertRoleMenu } from '@/api/index'
+import { getGatherList, delGather, getCompressingFile, insertGather, updateRole } from '@/api/index'
 import useDemoStore from '@/store/modules/demo'
 
 import { useRouter } from 'vue-router'
@@ -82,7 +71,7 @@ const checkedKeys = ref<string[]>([]);
 
 const columns = [
   { title: '收集项目名称', dataIndex: 'name', key: 'name' },
-  { title: '备注信息', dataIndex: 'remarks', align: 'center' },
+  { title: '备注信息', dataIndex: 'remarks' },
   { title: '创建时间', dataIndex: 'createTime' },
   { title: '操作', key: 'action', width: 160, align: 'center' },
 ]
@@ -127,25 +116,6 @@ const check = (check: any, e: any) => {
 }
 
 
-const authSubmit = () => {
-  //这里需要注意下父级id 如何处理
-  let menuList = []
-  checkedKeys.value.forEach(item => {
-    menuList.push({
-      roleId: data.row.id,
-      menuId: item
-    })
-  })
-
-  insertRoleMenu({
-    menuList,
-    roleId: data.row.id
-  }).then(res => {
-    message.success('成功')
-    authVisible.value = false
-  })
-}
-
 
 const submit = async () => {
   if (!data.form.name || !data.form.remarks) {
@@ -166,7 +136,7 @@ const submit = async () => {
 
 const getList = async () => {
   try {
-    const res = await getGatherList({ ...data.page, title: data.title,all:'1' })
+    const res = await getGatherList({ ...data.page, title: data.title, all: '1' })
     data.tableData = res.data.rows || []
     data.total = res.data.count
   } catch (err) {
@@ -178,12 +148,10 @@ const del = async ({ id }) => {
   getList()
 }
 
-const setAuth = (record) => {
-  authVisible.value = true
-  data.row = record
-  checkedKeys.value = record.menuId
-  // data.form = Object.assign({}, { id, title, content: inputValue })
-  // modelTitle.value = '编辑'
+const downLoad = async (record) => {
+  console.log(record);
+  const res = await getCompressingFile({ folderName: record.name })
+  window.open(res.data)
 }
 const editRole = ({ id, name, remarks }) => {
   visible.value = true
@@ -202,9 +170,6 @@ const close = () => {
 }
 onMounted(() => {
   getList()
-  getMenuList().then(res => {
-    data.treeData = res.data
-  })
 })
 </script>
 <style scoped lang="less"></style>

@@ -22,6 +22,7 @@ import type { FormInstance } from 'ant-design-vue'
 import useDemoStore from '@/store/modules/demo'
 import { storeToRefs } from 'pinia'
 
+import { fileUrl } from '@/config/index'
 const demoStore = useDemoStore()
 
 
@@ -66,13 +67,15 @@ const handleUploadImage = (event, insertImage, files) => {
   // 在这里进行一系列的校验
   const formData = new FormData();
   formData.append("file", file);
-  axios.post('http://localhost:3000/api/upload/file', formData, {
-    'Content-type': 'multipart/form-data'
+  axios.post(fileUrl + '/api/upload/file', formData, {
+    'Content-type': 'multipart/form-data',
+    'headers': {
+      'token': demoStore.data.token
+    }
   }).then(res => {
-    console.log(res)
     // 上传成功后的处理
     insertImage({
-      url: res.data.url,
+      url: res.data.data.url,
       desc: file.name,
       width: 'auto',
       height: 'auto',

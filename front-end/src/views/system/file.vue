@@ -11,7 +11,8 @@
     <a-table :columns="columns" :data-source="data.tableData" bordered :pagination="false" rowKey="id" class="top-10">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'img'">
-          <a-image :width="75" :src="'https://bt.nmxgzs.cn/upload/' + record.path" />
+          <a-image :width="75" :src="data.fileUrl + record.path" v-if="getSuffix(record)" />
+          <span v-else>--不支持预览--</span>
         </template>
         <template v-if="column.key === 'name'">
           <span @click="copy(record)">{{ record.name }}</span>
@@ -37,8 +38,8 @@
 
 
     <a-modal v-model:visible="visible" title="上传文件" @cancel="getList" @ok="visible = false; getList()">
-      <a-upload v-model:file-list=" data.fileList " name="file" list-type="picture-card" action="/api/upload/file"
-        @change=" handleChange " :headers=" headers ">
+      <a-upload v-model:file-list="data.fileList" name="file" list-type="picture-card" action="/api/upload/file"
+        @change="handleChange" :headers="headers">
         <div>
           <plus-outlined></plus-outlined>
           <div class="ant-upload-text">Upload</div>
@@ -56,7 +57,7 @@ import { onMounted, ref, reactive } from 'vue'
 import { getFileList, deleteFile, insertArticle, updateArticle } from '@/api/index'
 import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
 import useDemoStore from '@/store/modules/demo'
-
+import { fileUrl } from '@/config/index'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -69,17 +70,26 @@ const current = ref<number>(1)
 const value = ref<string>('')
 const modelTitle = ref<string>('新增')
 const columns = [
+  {
+    title: '序号',
+    align: "center",
+    width: 80,
+    customRender: ({ index }) => {
+      return `${index + 1}`;
+    }
+  },
   { title: '预览', dataIndex: 'img', key: 'img' },
   { title: '名称', dataIndex: 'name', key: 'name' },
-  { title: '历史名称', dataIndex: 'oldName', align: 'center' },
+  { title: '历史名称', dataIndex: 'oldName' },
   { title: '路劲', dataIndex: 'path' },
-  { title: '创建时间', dataIndex: 'createTime' },
+  { title: '上传时间', dataIndex: 'createTime' },
   { title: '操作', key: 'action', width: 160, align: 'center' },
 ]
 
 const data = reactive({
   fileList: [],
   tableData: [],
+  fileUrl,
   page: {
     pageSize: 10,
     pageNum: 1,
@@ -94,6 +104,10 @@ const onChange = (pageNumber: number, pageSize) => {
   data.page.pageNum = pageNumber
   data.page.pageSize = pageSize
   getList()
+}
+
+const getSuffix = (item) => {
+  return ['.jpg', '.png', '.jpeg'].includes(item.suffix.toLowerCase())
 }
 
 const handleChange = (info: UploadChangeParam) => {
@@ -116,7 +130,7 @@ const openChild = () => {
   visible.value = true
 }
 const copy = (record) => {
-  const url = 'https://bt.nmxgzs.cn/upload/' + record.path
+  const url = fileUrl + record.path
   navigator && navigator.clipboard && navigator.clipboard.writeText(url).then(res => {
     message.success(`复制成功 ${url}`)
   })

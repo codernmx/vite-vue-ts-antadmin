@@ -1,6 +1,6 @@
 <!--
  * @Date: 2023-06-06 12:41:48
- * @LastEditTime: 2023-06-14 16:13:43
+ * @LastEditTime: 2023-06-15 19:51:34
 -->
 <template>
     <div>
@@ -12,21 +12,22 @@
             </template>
             新增
         </a-button>
-        <a-table :columns="columns" :data-source="data.tableData" bordered :pagination="false" rowKey="id" class="top-10" childrenColumnName="others">
+        <a-table :columns="columns" :data-source="data.tableData" bordered :pagination="false" rowKey="id" class="top-10"
+            childrenColumnName="others">
             <template #bodyCell="{ column, record, index }">
                 <template v-if="column.key === 'index'">
                     {{ index + 1 }}
                 </template>
-              <template v-if="column.key === 'avatar'">
-                <a-avatar :src="record.avatar" />
-              </template>
+                <template v-if="column.key === 'avatar'">
+                    <a-avatar :src="record.avatar" />
+                </template>
                 <template v-if="column.key === 'invite'">
-                  {{record.children.length}}
+                    {{ record.children.length }}
                 </template>
                 <template v-if="column.key === 'action'">
-                  <div>
-                      <a @click.top="openDetail(record)">详情</a>
-                  </div>
+                    <div>
+                        <!-- <a @click.top="openDetail(record)">详情</a> -->
+                    </div>
                 </template>
             </template>
         </a-table>
@@ -114,7 +115,7 @@ const columns: Column[] = [
             return `${index + 1}`;
         }
     },
-    { title: '头像', dataIndex: 'avatar',key:'avatar' },
+    { title: '头像', dataIndex: 'avatar', key: 'avatar' },
     { title: '用户名', dataIndex: 'name', align: 'center' },
     { title: 'openId', dataIndex: 'openId' },
     { title: '邀请用户数', dataIndex: 'invite', key: 'invite' },
@@ -199,7 +200,7 @@ const getList = async () => {
     }
 }
 const openDetail = async (record) => {
-  authVisible.value = true
+    authVisible.value = true
 }
 
 

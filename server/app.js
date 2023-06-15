@@ -1,10 +1,9 @@
 /*
  * @Date: 2023-05-12 11:45:13
- * @LastEditTime: 2023-06-06 13:29:20
+ * @LastEditTime: 2023-06-15 23:02:11
  */
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var Index = require('./routes/index');
@@ -20,9 +19,12 @@ var app = express();
 app.use(logger('dev'));
 app.use(express.json({ limit: '200mb' })) //修改请求参数限制
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/upload', express.static(path.join(__dirname, '/upload')));
+
+app.use('/upload', (req, res, next) => {// 开放upload
+	console.info(`${req.headers['x-real-ip']} --------------------> ${req.originalUrl}`);
+	next();
+}, express.static(path.join(__dirname, '/upload')));
 
 /* 跨域 */
 app.all('*', function (req, res, next) {

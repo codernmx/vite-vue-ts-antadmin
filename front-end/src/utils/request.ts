@@ -7,9 +7,10 @@ import { message } from 'ant-design-vue';
 import { ElLoading } from 'element-plus'
 import useDemoStore from '@/store/modules/demo'
 import router from '@/router/index'
+import { baseURL } from '@/config/index'
 
-
-const baseURL = 'http://localhost:3000/'
+// const baseURL = 'http://localhost:3000/'
+// const baseURL = 'http://localhost:3000/'
 
 let loading: any = null //这里是loading
 const request = axios.create({//使用create方法创建axios实例

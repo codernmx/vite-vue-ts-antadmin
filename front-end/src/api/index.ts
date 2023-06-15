@@ -308,3 +308,23 @@ export function delGather(data) {
         data
     })
 }
+
+
+// 获取用户统计信息
+
+export function getUserTotal() {
+    return request({
+        url: `/api/user/total`,
+        method: 'GET',
+    })
+}
+
+
+/* 下载压缩文件 */
+export function getCompressingFile(data) {
+    return request({
+        url: '/api/applet/compressing/file',
+        method: 'POST',
+        data
+    })
+}

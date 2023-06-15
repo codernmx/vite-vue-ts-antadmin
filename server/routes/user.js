@@ -1,17 +1,17 @@
 /*
  * @Date: 2023-06-06 13:05:56
- * @LastEditTime: 2023-06-06 13:08:08
+ * @LastEditTime: 2023-06-15 19:56:34
  */
 var express = require('express');
 var router = express.Router();
-const {success, fail, uuid} = require('../utils/index');
-const {literal, Op, Sequelize} = require("sequelize");
-const {User} = require('../models/index')
+const { success, fail, uuid } = require('../utils/index');
+const { literal, Op, Sequelize } = require("sequelize");
+const { User } = require('../models/index')
 
 
 /* 获取用户列表 */
 router.post('/user/list', async (req, response, next) => {
-    const {name, pageSize, pageNum} = req.body
+    const { name, pageSize, pageNum } = req.body
     try {
         let data = await User.findAndCountAll({
             where: {
@@ -33,10 +33,10 @@ router.post('/user/list', async (req, response, next) => {
 
 /* 获取用户详情 */
 router.post('/user/details', async (req, response, next) => {
-    const {id} = req.body
+    const { id } = req.body
     try {
         const data = await User.findOne({
-            where: {id}
+            where: { id }
         });
         response.send(success(data))
     } catch (error) {
@@ -47,9 +47,9 @@ router.post('/user/details', async (req, response, next) => {
 
 /* 添加用户 */
 router.post('/insert/user', async (req, response, next) => {
-    const {title, content, userId, inputValue} = req.body
+    const { title, content, userId, inputValue } = req.body
     try {
-        const res = await User.create({id: uuid(), title, content, userId, inputValue})
+        const res = await User.create({ id: uuid(), title, content, userId, inputValue })
         response.send(success(res))
     } catch (error) {
         response.send(fail(error))
@@ -58,11 +58,11 @@ router.post('/insert/user', async (req, response, next) => {
 
 /* 编辑用户 */
 router.post('/update/user', async (req, response, next) => {
-    const {id} = req.body
-    const params = {...req.body}
+    const { id } = req.body
+    const params = { ...req.body }
     // 这里有点问题  会影响 loginTime
     try {
-        const data = await User.update({...params}, {where: {id}});
+        const data = await User.update({ ...params }, { where: { id } });
         response.send(success(data))
     } catch (error) {
         response.send(fail(error))
@@ -71,9 +71,9 @@ router.post('/update/user', async (req, response, next) => {
 
 /* 删除用户 */
 router.post('/delete/user', async (req, response, next) => {
-    const {id} = req.body
+    const { id } = req.body
     try {
-        const data = await User.update({deleteTime: Sequelize.fn('NOW')}, {where: {id}});
+        const data = await User.update({ deleteTime: Sequelize.fn('NOW') }, { where: { id } });
         response.send(success(data))
     } catch (error) {
         response.send(fail(error))
@@ -82,8 +82,8 @@ router.post('/delete/user', async (req, response, next) => {
 
 // 获取邀请了用户的列表（没做分页）
 router.get('/user/list/have/children', async (req, response, next) => {
-    const pageNum  = Number(req.query.pageNum)
-    const pageSize  = Number(req.query.pageSize)
+    const pageNum = Number(req.query.pageNum)
+    const pageSize = Number(req.query.pageSize)
     try {
         // const sql = `SELECT * FROM user WHERE parentOpenId IS NOT NULL GROUP BY parentOpenId ORDER BY createTime DESC`
         const res = await User.findAndCountAll({
@@ -112,6 +112,21 @@ router.get('/user/list/have/children', async (req, response, next) => {
         response.send(success({
             count: res.count.length, rows: data
         }))
+    } catch (error) {
+        response.send(fail(error))
+    }
+});
+
+
+
+/* 获取用户统计信息 */
+router.get('/user/total', async (req, response, next) => {
+    try {
+        const sql = `select date_format(createTime,'%Y-%m-%d') day ,count(*) AS total  from user group by date_format(createTime,'%Y-%m-%d') ORDER BY createTime;`
+        const results = await User.sequelize.query(sql, {
+            type: Sequelize.QueryTypes.SELECT,
+        });
+        response.send(success(results))
     } catch (error) {
         response.send(fail(error))
     }
