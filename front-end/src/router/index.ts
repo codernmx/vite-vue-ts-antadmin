@@ -89,6 +89,13 @@ function change(temp: any, isChildren = false) {
 }
 
 const whiteList = ['/login', '/404', '/front/home']
+function getPageTitle(title: string) {
+    if (title) {
+        return 'V3 - 后台管理系统 - ' + title
+    } else {
+        return 'V3 - 后台管理系统'
+    }
+}
 //守卫
 router.beforeEach((to, from, next) => {
     //判断是否有权限返回登录界面
@@ -97,6 +104,8 @@ router.beforeEach((to, from, next) => {
         name: to.meta.title,
         path: to.path
     })
+    console.log(to.meta.title);
+    document.title = getPageTitle(to.meta.title)
     const { menuList } = storeToRefs(demoStore)
     if (demoStore.data.token) {
         if (whiteList.indexOf(to.path) !== -1) {

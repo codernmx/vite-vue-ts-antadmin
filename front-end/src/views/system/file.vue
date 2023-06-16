@@ -58,6 +58,7 @@ import { getFileList, deleteFile, insertArticle, updateArticle } from '@/api/ind
 import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
 import useDemoStore from '@/store/modules/demo'
 import { fileUrl } from '@/config/index'
+import { copyToClipboard } from '@/utils/index'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -131,7 +132,7 @@ const openChild = () => {
 }
 const copy = (record) => {
   const url = fileUrl + record.path
-  navigator.clipboard.writeText(url).then(res => {
+  copyToClipboard(url).then(res => {
     message.success(`复制成功 ${url}`)
   }).catch(err => {
     console.log(err);
