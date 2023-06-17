@@ -1,6 +1,6 @@
 /*
  * @Date: 2023-06-06 13:05:56
- * @LastEditTime: 2023-06-15 23:23:30
+ * @LastEditTime: 2023-06-17 15:28:45
  */
 var express = require('express');
 var router = express.Router();
@@ -121,7 +121,7 @@ router.post('/compressing/file', async (req, response, next) => {
     const filePath = `./upload/university/${folderName}`
     compressing.zip.compressDir(filePath, `./upload/university/${folderName}.zip`)
         .then((res) => {
-            response.send(success(`${fileUrl}/university/${folderName}.zip`))
+            response.send(success(`${fileUrl}/upload/university/${folderName}.zip`))
         })
         .catch((error) => {
             /* 失败会生成一个破损文件删掉~ */

@@ -57,7 +57,7 @@ router.post('/file', upload.single('file'), async function (req, response, next)
 			suffix
 		})
 		response.send(success({
-			url: fileUrl + file.path.replace(/\\/g, '/')
+			url: fileUrl + '/' + file.path.replace(/\\/g, '/')
 		}))
 	} catch (error) {
 		response.send(fail(error))

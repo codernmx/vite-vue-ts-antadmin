@@ -2,7 +2,7 @@
   <div class="container">
     <div v-for="item in data.tableData" :key="item.id" class="item d-flex" @click="details(item)">
       <div class="img mr-30">
-        <el-image src="http://localhost:3000/upload/2023/20230330132196.jpg" style="width: 326px"></el-image>
+        <el-image :src="fileUrl+'/upload/2023/20230330132196.jpg'" style="width: 326px"></el-image>
       </div>
       <div class="content">
         <h3>{{ item.title }}</h3>
@@ -26,6 +26,7 @@
 import { getArticleList } from '@/api/index'
 import { reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import {fileUrl} from '@/config/index'
 
 const router = useRouter()
 const data = reactive({
