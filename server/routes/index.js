@@ -7,7 +7,7 @@ var fs = require('fs'); //文件
 const { success, fail, uuid } = require('../utils/index');
 const { literal, Op, Sequelize, where } = require("sequelize");
 const { User, Article, Menu, File, Role, RoleMenu, UserRole, CmsLogin } = require('../models/index')
-
+const { uploadBase } = require('../config/index')
 
 // // belongsTo 谁属于一个谁 / 一本书属于一个人
 Article.belongsTo(User, { foreignKey: 'userId', sourceKey: 'id' });
@@ -235,26 +235,26 @@ router.post('/file/list', async (req, response, next) => {
 
 /* 附件删除 */
 router.post('/del/file', async (req, response, next) => {
-	const { id } = req.body
-	try {
-		const res = await File.update({ deleteTime: Sequelize.fn('NOW') }, { where: { id } });
-		const data = await File.findOne({
-			where: { id }, raw: true
-		});
-		if (data) {
-			const fullPath = '/home/project/node/xcxlogin' + data.path
-			console.log(fullPath, 'fullPath')
-			fs.unlink(fullPath, (err) => {
-				if (err) {
-					response.send(fail(err))
-					return;
-				}
-				response.send(success(res))
-			});
-		}
-	} catch (error) {
-		response.send(fail(error))
-	}
+    const { id } = req.body
+    try {
+        const res = await File.update({ deleteTime: Sequelize.fn('NOW') }, { where: { id } });
+        const data = await File.findOne({
+            where: { id }, raw: true
+        });
+        if (data) {
+            const fullPath = uploadBase + + data.path
+            console.log(fullPath, 'fullPath')
+            fs.unlink(fullPath, (err) => {
+                if (err) {
+                    response.send(fail(err))
+                    return;
+                }
+                response.send(success(res))
+            });
+        }
+    } catch (error) {
+        response.send(fail(error))
+    }
 });
 
 

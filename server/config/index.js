@@ -1,9 +1,10 @@
 /*
  * @Date: 2023-06-09 09:50:08
- * @LastEditTime: 2023-06-17 15:30:23
+ * @LastEditTime: 2023-06-18 12:22:05
  */
 // const fileUrl = 'http://localhost:3000'  //文件访问路径 --本地
 const fileUrl = 'http://49.232.153.152:9090'  //文件访问路径 --线上
+const uploadBase = '/home/project/node/v3-admin/server'  //完整upload路径 --线上
 
 const dbConfig = {
     database: 'bjcx',
@@ -30,5 +31,6 @@ const dbConfig = {
 
 module.exports = {
     fileUrl,
-    dbConfig
+    dbConfig,
+    uploadBase
 }
