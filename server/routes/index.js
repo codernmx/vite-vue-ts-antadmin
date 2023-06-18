@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var md5 = require('md5-node');
 var jwt = require('../utils/jwt')
+var fs = require('fs'); //文件
 
 const { success, fail, uuid } = require('../utils/index');
 const { literal, Op, Sequelize, where } = require("sequelize");

@@ -43,12 +43,12 @@ router.post('/file', upload.single('file'), async function (req, response, next)
 	const file = req.file;
 	const usePath = file.path.substring(7)
 	const suffix = file.originalname.substring(file.originalname.lastIndexOf("."))
-	const fullPath = (path.resolve(__dirname, '..') + '\\' + file.path).replace(/\\/g, '/')
+	// const fullPath = (path.resolve(__dirname, '..') + '\\' + file.path).replace(/\\/g, '/')
 	console.log(file);
 	try {
 		await File.create({
 			id: uuid(),
-			fullPath,
+			// fullPath,
 			oldName: file.originalname,
 			name: file.filename,
 			size: file.size,
@@ -90,7 +90,7 @@ router.post('/gather/file', multer({ storage: multer.memoryStorage() }).single('
 			if (!existsFile) {
 				fileName = `${student}${suffix}`
 			} else {
-				fileName = `${student}-${createFileName(6)}${suffix}`
+				fileName = `${student}-${randomChar(6)}${suffix}`
 			}
 			/* 存文件 */
 			fs.writeFile(path.join(savePath, fileName), new Buffer(req.file.buffer), async function (err) {
@@ -99,6 +99,17 @@ router.post('/gather/file', multer({ storage: multer.memoryStorage() }).single('
 				}
 				/* 做上传成功的业务 */
 				try {
+					// 将文件添加到附件管理 就可以直接操作删除
+					const res = await File.create({
+						id: uuid(),
+						oldName: file.originalname,
+						name: fileName,
+						size: file.size,
+						path: '/' + path.join(savePath, fileName).replace(/\\/g, '/'),
+						suffix
+					})
+
+					//文件上传关联表
 					await StudentFile.create({ id: uuid(), gatherId, studentId, suffix })
 					let temp = Object.assign({}, file)
 					delete temp.buffer
