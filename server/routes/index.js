@@ -242,7 +242,7 @@ router.post('/del/file', async (req, response, next) => {
             where: { id }, raw: true
         });
         if (data) {
-            const fullPath = uploadBase + + data.path
+            const fullPath = uploadBase + data.path
             console.log(fullPath, 'fullPath')
             fs.unlink(fullPath, async (err) => {
                 if (err) {
