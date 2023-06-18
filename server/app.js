@@ -30,9 +30,12 @@ app.use('/upload', async (req, res, next) => {// 开放upload
 	console.info(`${req.headers['x-real-ip']} --------------------> ${req.originalUrl}`);
 	const ip = req.headers['x-real-ip']
 	if (ip) {
-		const ipRes = await axios.get(`https://api.map.baidu.com/location/ip?ak=Z2mZbxYsOQllRq7MqFspSrYNqG9uPa20&ip=${ip}&coor=bd09ll`)
-		const address = ipRes.data['content']['address']
-		await Log.create({ id: uuid(), action: req.path, address, http_user_agent: req.headers['user-agent'], ip })
+		data = await Log.findOne({ where: { ip }, raw: true });
+		if (!data) { //重复就不需要了
+			const ipRes = await axios.get(`https://api.map.baidu.com/location/ip?ak=Z2mZbxYsOQllRq7MqFspSrYNqG9uPa20&ip=${ip}&coor=bd09ll`)
+			const address = ipRes.data['content']['address']
+			await Log.create({ id: uuid(), action: req.originalUrl, address, http_user_agent: req.headers['user-agent'], ip })
+		}
 	}
 	next();
 }, express.static(path.join(__dirname, '/upload')));
