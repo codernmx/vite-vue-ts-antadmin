@@ -237,18 +237,19 @@ router.post('/file/list', async (req, response, next) => {
 router.post('/del/file', async (req, response, next) => {
     const { id } = req.body
     try {
-        const res = await File.update({ deleteTime: Sequelize.fn('NOW') }, { where: { id } });
+
         const data = await File.findOne({
             where: { id }, raw: true
         });
         if (data) {
             const fullPath = uploadBase + + data.path
             console.log(fullPath, 'fullPath')
-            fs.unlink(fullPath, (err) => {
+            fs.unlink(fullPath, async (err) => {
                 if (err) {
                     response.send(fail(err))
                     return;
                 }
+                const res = await File.update({ deleteTime: Sequelize.fn('NOW') }, { where: { id } });
                 response.send(success(res))
             });
         }
