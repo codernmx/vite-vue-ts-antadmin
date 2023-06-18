@@ -1,19 +1,24 @@
 /*
  * @Date: 2023-05-12 11:45:13
- * @LastEditTime: 2023-06-16 00:05:23
+ * @LastEditTime: 2023-06-18 14:31:54
  */
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
 
 var Index = require('./routes/index');
-var User = require('./routes/user');
+var UserRoute = require('./routes/user');
 var Gather = require('./routes/gather');
-var Log = require('./routes/log');
+var LogRoute = require('./routes/log');
 var Upload = require('./routes/upload');
 var jwt = require('./utils/jwt')
 
 var app = express();
+
+
+const { uuid } = require('./utils/index');
+const axios = require('axios')
+const { Log } = require('./models/index')
 
 
 app.use(logger('dev'));
@@ -21,8 +26,14 @@ app.use(express.json({ limit: '200mb' })) //修改请求参数限制
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/upload', (req, res, next) => {// 开放upload
+app.use('/upload', async (req, res, next) => {// 开放upload
 	console.info(`${req.headers['x-real-ip']} --------------------> ${req.originalUrl}`);
+	const ip = req.headers['x-real-ip']
+	if (ip) {
+		const ipRes = await axios.get(`https://api.map.baidu.com/location/ip?ak=Z2mZbxYsOQllRq7MqFspSrYNqG9uPa20&ip=${ip}&coor=bd09ll`)
+		const address = ipRes.data['content']['address']
+		await Log.create({ id: uuid(), action: req.path, address, http_user_agent: req.headers['user-agent'], ip })
+	}
 	next();
 }, express.static(path.join(__dirname, '/upload')));
 
@@ -62,8 +73,8 @@ app.use(function (req, res, next) {
 });
 
 app.use('/api', Index);
-app.use('/api', User);
-app.use('/api', Log);
+app.use('/api', UserRoute);
+app.use('/api', LogRoute);
 app.use('/api/applet', Gather);
 app.use('/api/upload', Upload);
 
