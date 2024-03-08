@@ -2,6 +2,7 @@
  * @Date: 2023-05-12 11:45:13
  * @LastEditTime: 2023-06-15 14:15:32
  */
+// @ts-ignore
 import {createApp} from 'vue'
 import './style.css'
 import App from './App.vue'

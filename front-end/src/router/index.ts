@@ -98,6 +98,7 @@ function getPageTitle(title: string) {
 }
 //守卫
 router.beforeEach((to, from, next) => {
+    console.log(to.apth,'-----------------要去的页面')
     //判断是否有权限返回登录界面
     const demoStore = useDemoStore()
     demoStore.setTag({
@@ -105,7 +106,7 @@ router.beforeEach((to, from, next) => {
         path: to.path
     })
     console.log(to.meta.title);
-    document.title = getPageTitle(to.meta.title)
+    document.title = getPageTitle(to.meta.title as any)
     const { menuList } = storeToRefs(demoStore)
     if (demoStore.data.token) {
         if (whiteList.indexOf(to.path) !== -1) {
